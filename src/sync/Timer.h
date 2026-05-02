@@ -1,7 +1,7 @@
 #include <chrono>
 #include <ratio>
 
-namespace sync {
+namespace tge::sync {
 template <typename TimeUnit> struct Timer {
     using Clock = std::chrono::high_resolution_clock;
     using TimePoint = Clock::time_point;
@@ -23,8 +23,8 @@ template <typename TimeUnit> struct Timer {
         return false;
     }
 
-  private:
+private:
     TimeUnit interval;
     TimePoint last;
 };
-} // namespace sync
+} // namespace tge::sync
