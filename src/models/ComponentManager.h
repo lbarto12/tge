@@ -20,6 +20,13 @@ public:
         return static_cast<T*>(this->components[id]);
     }
 
+    ~ComponentManager() {
+        for (auto& [id, obj] : this->components) {
+            delete obj;
+        }
+        this->components.clear();
+    }
+
 private:
     std::unordered_map<std::string, ComponentBase*> components;
 };

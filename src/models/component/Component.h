@@ -8,6 +8,7 @@ namespace tge {
 class ComponentBase {
 public:
     ComponentBase() {}
+    virtual ~ComponentBase() = default;
 
     virtual void Init() {}
     virtual void Update() {}

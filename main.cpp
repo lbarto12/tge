@@ -5,6 +5,7 @@ struct CustomComponent : public tge::ComponentBase {
     TGE_BASIC_CONSTRUCT(CustomComponent);
 
     void Init() override { std::cout << "custom init\n"; }
+    void Update() override { std::cout << "component update\n"; }
 };
 
 class Game : public tge::GameManager {
@@ -14,13 +15,11 @@ public:
     void Start() override {
         std::cout << "start\n";
         this->SetFPS(165);
-        this->SetTicksPerSecond(1);
+        this->SetTicksPerSecond(60);
 
-        Construct("test2")([]() { return new CustomComponent(); });
-
-        Component("test");
+        Construct("test")([]() { return new CustomComponent(); });
     }
-    void Update() override { Get("test2")->Update(); }
+    void Update() override { Get("test")->Update(); }
     void Render() override {}
 
 private:
