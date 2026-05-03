@@ -9,9 +9,18 @@ namespace tge::render {
 
 class Terminal {
 public:
-    static bool Init() { return platform::enableAnsi(); }
+    static bool Init() {
+        bool okInit = platform::enableAnsi();
+        Clear();
+        HideCursor();
+        EnableRawMode();
+        return okInit;
+    }
 
-    static void Clear() { std::fputs("\033[2J\033[H", stdout); }
+    static void Clear() {
+        std::fputs("\033[2J\033[H", stdout);
+        std::fflush(stdout);
+    }
     static void Home() { std::fputs("\033[H", stdout); }
 
     static void MoveTo(int col, int row) { std::printf("\033[%d;%dH", row + 1, col + 1); }
@@ -29,6 +38,13 @@ public:
 
     static bool EnableRawMode() { return platform::enableRawMode(); }
     static void DisableRawMode() { platform::disableRawMode(); }
+
+    static void UnMount() {
+        Clear();
+        ResetStyle();
+        ShowCursor();
+        DisableRawMode();
+    }
 
     static void Flush() { std::fflush(stdout); }
 };

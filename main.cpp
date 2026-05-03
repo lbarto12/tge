@@ -1,3 +1,4 @@
+#include "src/input/Keyboard.h"
 #include "src/models/GameManager.h"
 
 struct CustomComponent : public tge::ComponentBase {
@@ -17,7 +18,12 @@ public:
 
         Construct("test")([]() { return new CustomComponent(); });
     }
-    void Update() override { Get("test")->Update(); }
+    void Update() override {
+        auto keypress = gte::Keyboard::GetKeyPress();
+        if (keypress.Is('q')) {
+            this->Quit();
+        }
+    }
     void Render() override {}
 
 private:

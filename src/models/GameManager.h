@@ -24,7 +24,7 @@ public:
 
     bool Run() {
         render::Terminal::Init();
-        render::Terminal::EnableRawMode();
+
         // Safety net for abnormal exits - raw mode would otherwise leak into the user's shell.
         std::atexit([] { render::Terminal::DisableRawMode(); });
 
@@ -39,7 +39,7 @@ public:
             std::this_thread::sleep_for(std::chrono::milliseconds(1)); // no runaway cpu shit
         }
 
-        render::Terminal::DisableRawMode();
+        render::Terminal::UnMount();
         return true;
     }
 
