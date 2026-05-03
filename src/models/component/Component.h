@@ -1,5 +1,7 @@
-
+#pragma once
 #include <iostream>
+
+#include "../../input/Keyboard.h"
 
 #define TGE_BASIC_CONSTRUCT(cname)                                                                                     \
     cname() : tge::ComponentBase() {}
@@ -13,6 +15,11 @@ public:
     virtual void Init() {}
     virtual void Update() {}
     virtual void Render() {}
+
+    void SetTickKeyEvent(gte::KeyEvent event) { this->keypress = event; }
+
+protected:
+    gte::KeyEvent keypress;
 
 private:
 };

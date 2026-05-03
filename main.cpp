@@ -1,11 +1,32 @@
 #include "src/input/Keyboard.h"
 #include "src/models/GameManager.h"
+#include "src/render/Terminal.h"
 
 struct CustomComponent : public tge::ComponentBase {
     TGE_BASIC_CONSTRUCT(CustomComponent);
 
     void Init() override {}
-    void Update() override {}
+    void Update() override {
+        if (keypress.Is(gte::Key::Left)) {
+            x -= 1;
+        }
+        if (keypress.Is(gte::Key::Right)) {
+            x += 1;
+        }
+        if (keypress.Is(gte::Key::Up)) {
+            y -= 1;
+        }
+        if (keypress.Is(gte::Key::Down)) {
+            y += 1;
+        }
+    }
+
+    void Render() override {
+        tge::render::Terminal::MoveTo(x, y);
+        std::cout << "X" << std::flush;
+    }
+
+    int x = 5, y = 5;
 };
 
 class Game : public tge::GameManager {
@@ -19,12 +40,13 @@ public:
         Construct("test")([]() { return new CustomComponent(); });
     }
     void Update() override {
-        auto keypress = gte::Keyboard::GetKeyPress();
         if (keypress.Is('q')) {
             this->Quit();
         }
+
+        Get<CustomComponent>("test")->Update();
     }
-    void Render() override {}
+    void Render() override { Get<CustomComponent>("test")->Render(); }
 
 private:
 };

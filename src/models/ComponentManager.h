@@ -20,6 +20,13 @@ public:
         return static_cast<T*>(this->components[id]);
     }
 
+    // sync stuff
+    void injectKeyState(gte::KeyEvent event) {
+        for (auto& [_, component] : this->components) {
+            component->SetTickKeyEvent(event);
+        }
+    }
+
     ~ComponentManager() {
         for (auto& [id, obj] : this->components) {
             delete obj;

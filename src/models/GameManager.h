@@ -1,3 +1,4 @@
+#pragma once
 #include "../models/ComponentManager.h"
 #include "../render/Terminal.h"
 #include "../sync/Timer.h"
@@ -31,6 +32,8 @@ public:
         this->Start();
         while (this->running) {
             if (this->tickSpeed.Await()) {
+                this->keypress = gte::Keyboard::GetKeyPress();
+                this->components.injectKeyState(this->keypress);
                 this->Update();
             }
             if (this->renderFps.Await()) {
@@ -82,6 +85,10 @@ private:
     bool running = true;
     sync::Timer<std::chrono::milliseconds> renderFps;
     sync::Timer<std::chrono::milliseconds> tickSpeed;
+
+protected:
+    // events
+    gte::KeyEvent keypress;
 
 private:
     long long calcTimerDurationFromFPS(long long perSecond) { return 1000 / perSecond; }
