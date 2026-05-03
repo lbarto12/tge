@@ -25,7 +25,7 @@ public:
     bool Run() {
         render::Terminal::Init();
         render::Terminal::EnableRawMode();
-        // Safety net for abnormal exits — raw mode would otherwise leak into the user's shell.
+        // Safety net for abnormal exits - raw mode would otherwise leak into the user's shell.
         std::atexit([] { render::Terminal::DisableRawMode(); });
 
         this->Start();
