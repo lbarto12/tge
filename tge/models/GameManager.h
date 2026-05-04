@@ -17,6 +17,7 @@ public:
     GameManager() {
         this->SetFPS(DEFAULT_RENDER_FPS);
         this->SetTicksPerSecond(DEFAULT_TICK_SPEED);
+        std::setlocale(LC_ALL, "");
     }
 
     virtual void Start() {}

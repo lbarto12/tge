@@ -1,7 +1,7 @@
 #pragma once
 #include <algorithm>
-#include <iostream>
-#include <ostream>
+#include <cstdio>
+#include <cwchar>
 #include <vector>
 
 #include "../../render/Terminal.h"
@@ -10,15 +10,14 @@
 namespace tge::internal::components {
 class ComponentRenderManager {
 public:
-    void DrawCell(Vector2i where, char what) {
+    void DrawCell(Vector2i where, wchar_t what) {
         cellsDrawn.push_back(where);
         tge::render::Terminal::MoveTo(where.x, where.y);
-        std::cout << what << std::flush;
+        std::printf("%lc", static_cast<wint_t>(what));
+        std::fflush(stdout);
     }
 
     void SwapBuffer() {
-        std::vector<Vector2i> toErase;
-
         for (const Vector2i& v : previousBuffer) {
 
             // No need to rerender
@@ -27,7 +26,8 @@ public:
             }
 
             tge::render::Terminal::MoveTo(v.x, v.y);
-            std::cout << " " << std::flush;
+            std::fputs(" ", stdout);
+            std::fflush(stdout);
         }
 
         previousBuffer = cellsDrawn;

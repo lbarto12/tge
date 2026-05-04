@@ -4,7 +4,7 @@
 #include "tge/models/component/basic/Rectangle.h"
 
 struct CustomComponent : public tge::Rectangle {
-    CustomComponent() : tge::Rectangle({20, 10}) {}
+    CustomComponent() : tge::Rectangle({15, 7}, L'█') {}
 
     void Init() override {}
     void Update() override {
@@ -29,7 +29,7 @@ public:
 
     void Start() override {
         this->SetFPS(165);
-        this->SetTicksPerSecond(60);
+        this->SetTicksPerSecond(165);
 
         Construct("test")([]() { return new CustomComponent(); });
     }
