@@ -1,36 +1,26 @@
-#include "src/input/Keyboard.h"
-#include "src/input/Platform.h"
-#include "src/models/GameManager.h"
+#include "tge/input/Keyboard.h"
+#include "tge/input/Platform.h"
+#include "tge/models/GameManager.h"
+#include "tge/models/component/basic/Rectangle.h"
 
-struct CustomComponent : public tge::ComponentBase {
-    TGE_BASIC_CONSTRUCT(CustomComponent);
+struct CustomComponent : public tge::Rectangle {
+    CustomComponent() : tge::Rectangle({20, 10}) {}
 
     void Init() override {}
     void Update() override {
         if (tge::Keyboard::GetKeyDown(tge::Key::Left) || tge::Keyboard::GetKeyDown(tge::Key::A)) {
-            x -= 2;
+            Move({-2, 0});
         }
         if (tge::Keyboard::GetKeyDown(tge::Key::Right) || tge::Keyboard::GetKeyDown(tge::Key::D)) {
-            x += 2;
+            Move({2, 0});
         }
         if (tge::Keyboard::GetKeyDown(tge::Key::Up) || tge::Keyboard::GetKeyDown(tge::Key::W)) {
-            y -= 1;
+            Move({0, -1});
         }
         if (tge::Keyboard::GetKeyDown(tge::Key::Down) || tge::Keyboard::GetKeyDown(tge::Key::S)) {
-            y += 1;
+            Move({0, 1});
         }
     }
-
-    void Render() override {
-        for (int i = 0; i < 10; ++i) {
-            for (int j = 0; j < 20; ++j) {
-                render.DrawCell({x + j, y + i}, '#');
-            }
-        }
-        render.SwapBuffer();
-    }
-
-    int x = 5, y = 5;
 };
 
 class Game : public tge::GameManager {

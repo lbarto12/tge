@@ -1,7 +1,7 @@
 .PHONY: run clean
 
-SRCS = main.cpp $(shell find src -name "*.cpp")
-INCLUDE_DIRS = $(shell find src -type d)
+SRCS = main.cpp $(shell find tge -name "*.cpp")
+INCLUDE_DIRS = $(shell find tge -type d)
 INCLUDE_FLAGS = $(addprefix -I,$(INCLUDE_DIRS))
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall $(INCLUDE_FLAGS)
