@@ -3,6 +3,7 @@
 
 #include "../../input/Keyboard.h"
 #include "ComponentRenderManager.h"
+#include "Drawable.h"
 #include "Transformable.h"
 
 #define TGE_BASIC_CONSTRUCT(cname)                                                                                     \
@@ -12,16 +13,12 @@
     cname() : pname() {}
 
 namespace tge {
-class ComponentBase : public Transformable {
+class ComponentBase : public Transformable, public Drawable {
 public:
-    ComponentBase() : Transformable() {}
+    ComponentBase() : Transformable(), Drawable() {}
     virtual ~ComponentBase() = default;
 
     virtual void Init() {}
     virtual void Update() {}
-    virtual void Render() {}
-
-protected:
-    internal::components::ComponentRenderManager render;
 };
 } // namespace tge

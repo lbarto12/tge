@@ -38,9 +38,9 @@ public:
             this->Quit();
         }
 
-        Get<CustomComponent>("test")->Update();
+        Get("test")->Update();
     }
-    void Render() override { Get<CustomComponent>("test")->Render(); }
+    void Render() override { Get("test")->Render(); }
 
 private:
 };
