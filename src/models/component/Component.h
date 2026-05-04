@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "../../input/Keyboard.h"
+#include "ComponentRenderManager.h"
 
 #define TGE_BASIC_CONSTRUCT(cname)                                                                                     \
     cname() : tge::ComponentBase() {}
@@ -16,6 +17,7 @@ public:
     virtual void Update() {}
     virtual void Render() {}
 
-private:
+protected:
+    internal::components::ComponentRenderManager render;
 };
 } // namespace tge

@@ -1,7 +1,6 @@
 #include "src/input/Keyboard.h"
 #include "src/input/Platform.h"
 #include "src/models/GameManager.h"
-#include "src/render/Terminal.h"
 
 struct CustomComponent : public tge::ComponentBase {
     TGE_BASIC_CONSTRUCT(CustomComponent);
@@ -9,10 +8,10 @@ struct CustomComponent : public tge::ComponentBase {
     void Init() override {}
     void Update() override {
         if (tge::Keyboard::GetKeyDown(tge::Key::Left) || tge::Keyboard::GetKeyDown(tge::Key::A)) {
-            x -= 1;
+            x -= 2;
         }
         if (tge::Keyboard::GetKeyDown(tge::Key::Right) || tge::Keyboard::GetKeyDown(tge::Key::D)) {
-            x += 1;
+            x += 2;
         }
         if (tge::Keyboard::GetKeyDown(tge::Key::Up) || tge::Keyboard::GetKeyDown(tge::Key::W)) {
             y -= 1;
@@ -23,8 +22,12 @@ struct CustomComponent : public tge::ComponentBase {
     }
 
     void Render() override {
-        tge::render::Terminal::MoveTo(x, y);
-        std::cout << "X" << std::flush;
+        for (int i = 0; i < 10; ++i) {
+            for (int j = 0; j < 20; ++j) {
+                render.DrawCell({x + j, y + i}, '#');
+            }
+        }
+        render.SwapBuffer();
     }
 
     int x = 5, y = 5;
