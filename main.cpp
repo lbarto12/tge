@@ -29,7 +29,7 @@ public:
 
     void Start() override {
         this->SetFPS(165);
-        this->SetTicksPerSecond(165);
+        this->SetTicksPerSecond(60);
 
         Construct("test")([]() { return new CustomComponent(); });
     }
