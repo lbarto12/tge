@@ -1,10 +1,10 @@
 #pragma once
+#include <cctype>
 #include <optional>
 
 #include "./Platform.h"
 
-namespace gte {
-enum class Key { None = 0, Character, Up, Down, Left, Right, Escape, Enter, Backspace, Delete, Home, End, Tab };
+namespace tge {
 
 struct KeyEvent {
     Key key = Key::None;
@@ -14,17 +14,18 @@ struct KeyEvent {
 };
 
 struct Keyboard {
-    static KeyEvent GetKeyPress() {
+    static bool Init() { return platform::initKeyState(); }
+    static void Shutdown() { platform::shutdownKeyState(); }
+
+    static KeyEvent GetKeyPressed() {
         std::optional<char> key = platform::getKey();
 
         if (!key) return {Key::None};
 
-        // simple single-byte keys
         if (*key == '\r' || *key == '\n') return {Key::Enter};
         if (*key == '\t') return {Key::Tab};
         if (*key == 127 || *key == 8) return {Key::Backspace};
 
-        // escape seuqences
         if (*key == '\x1b') {
             auto second = platform::readByteTimeout();
             if (!second) return {Key::Escape};
@@ -47,7 +48,6 @@ struct Keyboard {
                 case 'F':
                     return {Key::End};
                 case '3': {
-                    // Delete = \x1b[3~
                     auto tilde = platform::readByteTimeout();
                     if (tilde && *tilde == '~') return {Key::Delete};
                     break;
@@ -59,6 +59,22 @@ struct Keyboard {
         }
         return {Key::Character, *key};
     }
+
+    static bool GetKeyDown(Key k) { return platform::isKeyDown(k); }
+
+    static bool GetKeyDown(char c) {
+        char up = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
+        if (up >= 'A' && up <= 'Z') {
+            return platform::isKeyDown(static_cast<Key>(static_cast<int>(Key::A) + (up - 'A')));
+        }
+        if (c >= '0' && c <= '9') {
+            return platform::isKeyDown(static_cast<Key>(static_cast<int>(Key::Num0) + (c - '0')));
+        }
+        if (c == ' ') return platform::isKeyDown(Key::Space);
+        if (c == '\t') return platform::isKeyDown(Key::Tab);
+        if (c == '\r' || c == '\n') return platform::isKeyDown(Key::Enter);
+        return false;
+    }
 };
 
-} // namespace gte
+} // namespace tge

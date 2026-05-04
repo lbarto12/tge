@@ -7,16 +7,16 @@ struct CustomComponent : public tge::ComponentBase {
 
     void Init() override {}
     void Update() override {
-        if (keypress.Is(gte::Key::Left)) {
+        if (tge::Keyboard::GetKeyDown(tge::Key::Left) || tge::Keyboard::GetKeyDown('a')) {
             x -= 1;
         }
-        if (keypress.Is(gte::Key::Right)) {
+        if (tge::Keyboard::GetKeyDown(tge::Key::Right) || tge::Keyboard::GetKeyDown('d')) {
             x += 1;
         }
-        if (keypress.Is(gte::Key::Up)) {
+        if (tge::Keyboard::GetKeyDown(tge::Key::Up) || tge::Keyboard::GetKeyDown('w')) {
             y -= 1;
         }
-        if (keypress.Is(gte::Key::Down)) {
+        if (tge::Keyboard::GetKeyDown(tge::Key::Down) || tge::Keyboard::GetKeyDown('s')) {
             y += 1;
         }
     }
@@ -40,7 +40,7 @@ public:
         Construct("test")([]() { return new CustomComponent(); });
     }
     void Update() override {
-        if (keypress.Is('q')) {
+        if (tge::Keyboard::GetKeyDown('q')) {
             this->Quit();
         }
 

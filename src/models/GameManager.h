@@ -27,13 +27,19 @@ public:
         render::Terminal::Init();
 
         // Safety net for abnormal exits - raw mode would otherwise leak into the user's shell.
-        std::atexit([] { render::Terminal::DisableRawMode(); });
+        std::atexit([] {
+            render::Terminal::DisableRawMode();
+            tge::Keyboard::Shutdown();
+        });
+
+        if (!tge::Keyboard::Init()) {
+            render::Terminal::UnMount();
+            return false;
+        }
 
         this->Start();
         while (this->running) {
             if (this->tickSpeed.Await()) {
-                this->keypress = gte::Keyboard::GetKeyPress();
-                this->components.injectKeyState(this->keypress);
                 this->Update();
             }
             if (this->renderFps.Await()) {
@@ -42,6 +48,7 @@ public:
             std::this_thread::sleep_for(std::chrono::milliseconds(1)); // no runaway cpu shit
         }
 
+        tge::Keyboard::Shutdown();
         render::Terminal::UnMount();
         return true;
     }
@@ -85,10 +92,6 @@ private:
     bool running = true;
     sync::Timer<std::chrono::milliseconds> renderFps;
     sync::Timer<std::chrono::milliseconds> tickSpeed;
-
-protected:
-    // events
-    gte::KeyEvent keypress;
 
 private:
     long long calcTimerDurationFromFPS(long long perSecond) { return 1000 / perSecond; }
