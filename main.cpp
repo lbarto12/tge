@@ -1,4 +1,5 @@
 #include "src/input/Keyboard.h"
+#include "src/input/Platform.h"
 #include "src/models/GameManager.h"
 #include "src/render/Terminal.h"
 
@@ -7,16 +8,16 @@ struct CustomComponent : public tge::ComponentBase {
 
     void Init() override {}
     void Update() override {
-        if (tge::Keyboard::GetKeyDown(tge::Key::Left) || tge::Keyboard::GetKeyDown('a')) {
+        if (tge::Keyboard::GetKeyDown(tge::Key::Left) || tge::Keyboard::GetKeyDown(tge::Key::A)) {
             x -= 1;
         }
-        if (tge::Keyboard::GetKeyDown(tge::Key::Right) || tge::Keyboard::GetKeyDown('d')) {
+        if (tge::Keyboard::GetKeyDown(tge::Key::Right) || tge::Keyboard::GetKeyDown(tge::Key::D)) {
             x += 1;
         }
-        if (tge::Keyboard::GetKeyDown(tge::Key::Up) || tge::Keyboard::GetKeyDown('w')) {
+        if (tge::Keyboard::GetKeyDown(tge::Key::Up) || tge::Keyboard::GetKeyDown(tge::Key::W)) {
             y -= 1;
         }
-        if (tge::Keyboard::GetKeyDown(tge::Key::Down) || tge::Keyboard::GetKeyDown('s')) {
+        if (tge::Keyboard::GetKeyDown(tge::Key::Down) || tge::Keyboard::GetKeyDown(tge::Key::S)) {
             y += 1;
         }
     }
