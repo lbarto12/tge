@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string>
 
-namespace tge::render {
+namespace tge {
 
 enum class Color : uint8_t {
     Black = 0,
@@ -32,4 +32,4 @@ inline std::string bg(uint8_t code) { return "\033[48;5;" + std::to_string(code)
 inline std::string fg(Color c) { return fg(static_cast<uint8_t>(c)); }
 inline std::string bg(Color c) { return bg(static_cast<uint8_t>(c)); }
 
-} // namespace tge::render
+} // namespace tge

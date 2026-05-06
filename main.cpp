@@ -2,9 +2,10 @@
 #include "tge/input/Platform.h"
 #include "tge/models/GameManager.h"
 #include "tge/models/component/basic/Rectangle.h"
+#include "tge/render/Color.h"
 
 struct CustomComponent : public tge::Rectangle {
-    CustomComponent() : tge::Rectangle({15, 7}, L'█') {}
+    CustomComponent() : tge::Rectangle({15, 7}) {}
 
     void Init() override {}
     void Update() override {
@@ -31,7 +32,11 @@ public:
         this->SetFPS(165);
         this->SetTicksPerSecond(60);
 
-        Construct("test")([]() { return new CustomComponent(); });
+        Construct("test")([]() {
+            auto c = new CustomComponent();
+            c->SetForegroundColor(tge::Color::Red);
+            return c;
+        });
     }
     void Update() override {
         if (tge::Keyboard::GetKeyDown('q')) {

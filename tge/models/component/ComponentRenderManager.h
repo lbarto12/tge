@@ -18,6 +18,10 @@ public:
         std::fflush(stdout);
     }
 
+    void StartForegroundColor(Color c) const { render::Terminal::SetForeground(c); }
+    void StartBackgroundColor(Color c) const { render::Terminal::SetBackground(c); }
+    void StopStyling() const { render::Terminal::ResetStyle(); }
+
     // Finds, and erases all cells that
     //  1) were drawn `before` the last call of `SwapBuffer` and
     //  2) were not re-drawn since the last call of `SwapBuffer`.
