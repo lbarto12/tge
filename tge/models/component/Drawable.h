@@ -1,4 +1,4 @@
-#include "ComponentRenderManager.h"
+#include "../../render/ScreenBuffer.h"
 
 namespace tge {
 class Drawable {
@@ -14,7 +14,7 @@ public:
     Color GetForegroundColor() const { return this->foreground; }
 
 protected:
-    internal::components::ComponentRenderManager render;
+    render::ScreenBuffer& render = render::ScreenBuffer::globalScreenBuffer;
 
 private:
     Color foreground = Color::White, background = Color::White;

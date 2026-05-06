@@ -31,6 +31,13 @@ public:
         this->SetFPS(165);
         this->SetTicksPerSecond(60);
 
+        Construct("bg")([]() {
+            auto ts = tge::render::Terminal::Size();
+            auto c = new tge::Rectangle({ts.cols, ts.rows});
+            c->SetBackgroundColor(tge::Color::White);
+            return c;
+        });
+
         Construct("test")([]() {
             auto c = new CustomComponent();
             c->SetForegroundColor(tge::Color::Red);
@@ -55,8 +62,11 @@ public:
         // std::cout << Get("wall")->GetSize().x << " " << Get("wall")->GetSize().y << "";
     }
     void Render() override {
-        Get("test")->Render();
+        Get("bg")->Render();
         Get("wall")->Render();
+        Get("test")->Render();
+
+        render.SwapBuffer();
     }
 
 private:

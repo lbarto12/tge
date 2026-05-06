@@ -11,17 +11,12 @@ public:
     Rectangle(const wchar_t fill) : ComponentBase(), fill(fill) {}
 
     void Render() override {
-        render.StartForegroundColor(this->GetForegroundColor());
-        render.StartBackgroundColor(this->GetBackgroundColor());
-
         for (int i = 0; i < this->GetSize().y; ++i) {
             for (int j = 0; j < this->GetSize().x; ++j) {
-                render.DrawCell({this->GetPosition().x + j, this->GetPosition().y + i}, this->fill);
+                render.DrawAtXY({this->GetPosition().x + j, this->GetPosition().y + i},
+                                {this->fill, this->GetForegroundColor(), this->GetBackgroundColor()});
             }
         }
-
-        render.StopStyling();
-        render.SwapBuffer();
     }
 
     void SetFill(const wchar_t fill) { this->fill = fill; }

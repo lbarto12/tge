@@ -6,6 +6,7 @@
 namespace tge {
 
 enum class Color : uint8_t {
+    None = 100,
     Black = 0,
     Red = 1,
     Green = 2,
