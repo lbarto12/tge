@@ -1,3 +1,4 @@
+#include "../util/Bounds.h"
 #include "../util/Vector2.h"
 
 namespace tge {
@@ -17,6 +18,24 @@ public:
         this->position.x = newPos.x;
         this->position.y = newPos.y;
         return this->size;
+    }
+
+    IntRect GetBounds() const {
+        return IntRect{
+            this->position.x,
+            this->position.y,
+            this->size.x,
+            this->size.y,
+        };
+    }
+
+    IntRect SetBounds(IntRect bounds) {
+        this->position.x = bounds.x;
+        this->position.y = bounds.y;
+        this->size.x = bounds.width;
+        this->size.y = bounds.height;
+
+        return bounds;
     }
 
     Vector2i Move(const Vector2i& delta) {
