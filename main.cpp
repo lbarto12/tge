@@ -1,8 +1,6 @@
-#include "tge/input/Keyboard.h"
-#include "tge/input/Platform.h"
-#include "tge/models/GameManager.h"
-#include "tge/models/component/basic/Rectangle.h"
-#include "tge/render/Color.h"
+#include "tge/game.h"
+#include "tge/graphics.h"
+#include "tge/input.h"
 
 struct CustomComponent : public tge::Rectangle {
     CustomComponent() : tge::Rectangle({15, 7}) {}
