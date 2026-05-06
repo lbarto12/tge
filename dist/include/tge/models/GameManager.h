@@ -1,7 +1,9 @@
 #pragma once
-#include "../models/ComponentManager.h"
+#include "../input/Keyboard.h"
+#include "../render/ScreenBuffer.h"
 #include "../render/Terminal.h"
 #include "../sync/Timer.h"
+#include "ComponentManager.h"
 
 #include <chrono>
 #include <cstdlib>
@@ -85,6 +87,9 @@ protected:
 
 private:
     tge::ComponentManager components;
+
+protected:
+    tge::render::ScreenBuffer& render = tge::render::ScreenBuffer::globalScreenBuffer;
 
 protected:
     /**
