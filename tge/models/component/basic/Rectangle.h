@@ -14,8 +14,8 @@ public:
         render.StartForegroundColor(this->GetForegroundColor());
         render.StartBackgroundColor(this->GetBackgroundColor());
 
-        for (int i = 0; i < this->size.y; ++i) {
-            for (int j = 0; j < this->size.x; ++j) {
+        for (int i = 0; i < this->GetSize().y; ++i) {
+            for (int j = 0; j < this->GetSize().x; ++j) {
                 render.DrawCell({this->GetPosition().x + j, this->GetPosition().y + i}, this->fill);
             }
         }
@@ -27,6 +27,6 @@ public:
     void SetFill(const wchar_t fill) { this->fill = fill; }
 
 private:
-    wchar_t fill;
+    wchar_t fill = L'█';
 };
 } // namespace tge

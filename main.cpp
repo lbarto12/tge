@@ -1,6 +1,7 @@
 #include "tge/game.h"
 #include "tge/graphics.h"
 #include "tge/input.h"
+#include "tge/models/component/basic/Rectangle.h"
 
 struct CustomComponent : public tge::Rectangle {
     CustomComponent() : tge::Rectangle({15, 7}) {}
@@ -35,6 +36,13 @@ public:
             c->SetForegroundColor(tge::Color::Red);
             return c;
         });
+
+        Construct("wall")([]() {
+            auto c = new tge::Rectangle();
+            c->SetForegroundColor(tge::Color::Blue);
+            c->SetSize({20, 20});
+            return c;
+        });
     }
     void Update() override {
         if (tge::Keyboard::GetKeyDown('q')) {
@@ -42,8 +50,14 @@ public:
         }
 
         Get("test")->Update();
+        Get("wall")->Update();
+
+        // std::cout << Get("wall")->GetSize().x << " " << Get("wall")->GetSize().y << "";
     }
-    void Render() override { Get("test")->Render(); }
+    void Render() override {
+        Get("test")->Render();
+        Get("wall")->Render();
+    }
 
 private:
 };
