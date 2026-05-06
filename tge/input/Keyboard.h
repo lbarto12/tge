@@ -14,9 +14,25 @@ struct KeyEvent {
 };
 
 struct Keyboard {
+    /**
+     * Initialization of keyboard state for the current platform
+     * @return success
+     */
     static bool Init() { return platform::initKeyState(); }
+
+    /**
+     * Reset keyboard state to sys defaults
+     */
     static void Shutdown() { platform::shutdownKeyState(); }
 
+    /**
+     * Get a single key press
+     *
+     * Best for capturing raw text for input modals etc.
+     * Is subject to the os key-repeat delay that you would expect when typing text
+     *
+     * @return the key event
+     */
     static KeyEvent GetKeyPressed() {
         std::optional<char> key = platform::getKey();
 
@@ -60,8 +76,18 @@ struct Keyboard {
         return {Key::Character, *key};
     }
 
+    /**
+     * Get whether a key is currently being held down
+     * @param k The key to check
+     * @return whether k is currently being held down
+     */
     static bool GetKeyDown(Key k) { return platform::isKeyDown(k); }
 
+    /**
+     * Get whether a key is currently being held down
+     * @param c the char value of the key
+     * @return whether c is currently being held down
+     */
     static bool GetKeyDown(char c) {
         char up = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
         if (up >= 'A' && up <= 'Z') {

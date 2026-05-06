@@ -24,6 +24,11 @@ public:
     virtual void Render() {}
     virtual void Update() {}
 
+    /**
+     * Run the game :)
+     *
+     * @return graceful exit
+     */
     bool Run() {
         render::Terminal::Init();
 
@@ -55,12 +60,25 @@ public:
     }
 
 protected:
+    /**
+     * Stop the application
+     */
     void Quit() { this->running = false; }
 
+    /**
+     * Set the game's FPS. FPS is used only for rendering.
+     *
+     * @param fps frames to render per second
+     */
     void SetFPS(long long fps) {
         this->renderFps = sync::Timer<std::chrono::milliseconds>{calcTimerDurationFromFPS(fps)};
     }
 
+    /**
+     * Set the game's TPS. TPS is used only for logic updates.
+     *
+     * @param tps game logic ticks per second
+     */
     void SetTicksPerSecond(long long tps) {
         this->tickSpeed = sync::Timer<std::chrono::milliseconds>{calcTimerDurationFromFPS(tps)};
     }
@@ -69,12 +87,34 @@ private:
     tge::ComponentManager components;
 
 protected:
+    /**
+     * Create a component from a template-type and
+     * Add component to component manager.
+     *
+     * @param id the ID for the created component
+     * @return the created component
+     */
     template <typename T = class ComponentBase> T* Component(const std::string& id) {
         T* component = this->components.addComponent<T>(id);
         component->Init();
         return component;
     }
 
+    /**
+     * Construct a component from an initilization function.
+     *
+     * This function returns a function that accepts a lambda.
+     * This lambda must return some derivative of `ComponentBase`
+     *
+     * Example usage
+     * ```
+     * Construct("my_id")([someArg, ...](){
+     *  return new CustomComponent(someArg, ...);
+     * });
+     *```
+     *
+     * @param id the ID of the new component
+     */
     template <typename T = class ComponentBase>
     std::function<T*(std::function<T*()>)> Construct(const std::string& id) {
         return [this, id](std::function<T*()> creator) -> T* {
