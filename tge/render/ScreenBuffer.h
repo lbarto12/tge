@@ -3,7 +3,6 @@
 #include "../models/util/Vector2.h"
 #include "Color.h"
 #include "Terminal.h"
-#include <cassert>
 #include <string>
 #include <utility>
 
