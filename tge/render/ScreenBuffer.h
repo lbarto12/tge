@@ -49,6 +49,7 @@ public:
                 const Pixel& p = this->next[i][j];
 
                 Terminal::MoveTo(j, i);
+                Terminal::ResetStyle();
                 if (p.fg != Color::None) tge::render::Terminal::SetForeground(p.fg);
                 if (p.bg != Color::None) tge::render::Terminal::SetBackground(p.bg);
 

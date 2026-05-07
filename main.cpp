@@ -2,6 +2,7 @@
 #include "tge/graphics.h"
 #include "tge/input.h"
 #include "tge/models/component/basic/Rectangle.h"
+#include "tge/render/Terminal.h"
 
 struct CustomComponent : public tge::Rectangle {
     CustomComponent() : tge::Rectangle({15, 7}) {}
@@ -34,7 +35,7 @@ public:
         Construct("bg")([]() {
             auto ts = tge::render::Terminal::Size();
             auto c = new tge::Rectangle({ts.cols, ts.rows});
-            c->SetBackgroundColor(tge::Color::White);
+            c->SetForegroundColor(tge::Color::BrightBlack);
             return c;
         });
 
