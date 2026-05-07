@@ -12,6 +12,11 @@
 #define TGE_CUSTOM_CONSTRUCT(cname, pname)                                                                             \
     cname() : pname() {}
 
+/**
+ * The basis for general components.
+ *
+ * Derived from `tge::Transformable` and `tge::Drawable`
+ */
 namespace tge {
 class ComponentBase : public Transformable, public Drawable {
 public:

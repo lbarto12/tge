@@ -139,6 +139,12 @@ protected:
         };
     }
 
+    /**
+     * Get a component from the game's storage.
+     *
+     * @param id the ID of the component
+     * @return the component.
+     */
     template <typename T = class ComponentBase> T* Get(const std::string& id) {
         return this->components.getComponent<T>(id);
     }
