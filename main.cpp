@@ -58,15 +58,11 @@ public:
 
         Get("test")->Update();
         Get("wall")->Update();
-
-        // std::cout << Get("wall")->GetSize().x << " " << Get("wall")->GetSize().y << "";
     }
     void Render() override {
         Get("bg")->Render();
         Get("wall")->Render();
         Get("test")->Render();
-
-        render.SwapBuffer();
     }
 
 private:

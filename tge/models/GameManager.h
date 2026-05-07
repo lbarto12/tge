@@ -29,7 +29,10 @@ public:
 private: // Internal loops and inits
     void internal_update() { this->Update(); }
 
-    void internal_render() { this->Render(); }
+    void internal_render() {
+        this->Render();
+        this->render.SwapBuffer();
+    }
 
 public:
     /**
