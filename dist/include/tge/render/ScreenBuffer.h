@@ -9,7 +9,7 @@
 namespace tge::render {
 
 struct Pixel {
-    wchar_t c = L'\0'; // No draw
+    wchar_t c = L' '; // No draw
     Color fg = Color::None;
     Color bg = Color::None;
 

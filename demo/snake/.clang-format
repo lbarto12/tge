@@ -1,0 +1,15 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+ColumnLimit: 120              # or 0 to disable wrapping entirely
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: true
+AllowShortBlocksOnASingleLine: Empty
+AccessModifierOffset: -4
+IndentAccessModifiers: false
+BinPackArguments: true
+BinPackParameters: true
+PenaltyBreakBeforeFirstCallParameter: 19
+PenaltyReturnTypeOnItsOwnLine: 60
+PointerAlignment: Left
