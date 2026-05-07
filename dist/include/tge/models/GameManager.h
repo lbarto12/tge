@@ -26,6 +26,12 @@ public:
     virtual void Render() {}
     virtual void Update() {}
 
+private: // Internal loops and inits
+    void internal_update() { this->Update(); }
+
+    void internal_render() { this->Render(); }
+
+public:
     /**
      * Run the game :)
      *
@@ -48,10 +54,10 @@ public:
         this->Start();
         while (this->running) {
             if (this->tickSpeed.Await()) {
-                this->Update();
+                this->internal_update();
             }
             if (this->renderFps.Await()) {
-                this->Render();
+                this->internal_render();
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(1)); // no runaway cpu shit
         }

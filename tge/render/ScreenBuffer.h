@@ -108,6 +108,6 @@ public:
 };
 
 // TODO: move to cpp
-ScreenBuffer ScreenBuffer::globalScreenBuffer({tge::render::Terminal::Size().cols, tge::render::Terminal::Size().rows});
+ScreenBuffer ScreenBuffer::globalScreenBuffer(tge::render::Terminal::Size());
 
 } // namespace tge::render

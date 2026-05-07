@@ -3,7 +3,6 @@
 #include "../models/util/Vector2.h"
 #include "Color.h"
 #include "Terminal.h"
-#include <cassert>
 #include <string>
 #include <utility>
 
@@ -50,6 +49,7 @@ public:
                 const Pixel& p = this->next[i][j];
 
                 Terminal::MoveTo(j, i);
+                Terminal::ResetStyle();
                 if (p.fg != Color::None) tge::render::Terminal::SetForeground(p.fg);
                 if (p.bg != Color::None) tge::render::Terminal::SetBackground(p.bg);
 
@@ -108,6 +108,6 @@ public:
 };
 
 // TODO: move to cpp
-ScreenBuffer ScreenBuffer::globalScreenBuffer({tge::render::Terminal::Size().cols, tge::render::Terminal::Size().rows});
+ScreenBuffer ScreenBuffer::globalScreenBuffer(tge::render::Terminal::Size());
 
 } // namespace tge::render

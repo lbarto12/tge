@@ -17,6 +17,6 @@ protected:
     render::ScreenBuffer& render = render::ScreenBuffer::globalScreenBuffer;
 
 private:
-    Color foreground = Color::White, background = Color::White;
+    Color foreground = Color::White, background = Color::None;
 };
 } // namespace tge

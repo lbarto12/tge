@@ -2,6 +2,7 @@
 
 #include <cstdio>
 
+#include "../models/util/Vector2.h"
 #include "Color.h"
 #include "Platform.h"
 
@@ -34,7 +35,10 @@ public:
     static void SetBackground(uint8_t code) { std::fputs(bg(code).c_str(), stdout); }
     static void ResetStyle() { std::fputs(RESET, stdout); }
 
-    static TerminalSize Size() { return platform::getTerminalSize(); }
+    static Vector2i Size() {
+        auto size = platform::getTerminalSize();
+        return {size.cols, size.rows};
+    }
 
     static bool EnableRawMode() { return platform::enableRawMode(); }
     static void DisableRawMode() { platform::disableRawMode(); }

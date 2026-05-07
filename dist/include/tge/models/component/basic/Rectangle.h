@@ -13,7 +13,7 @@ public:
     void Render() override {
         for (int i = 0; i < this->GetSize().y; ++i) {
             for (int j = 0; j < this->GetSize().x; ++j) {
-                render.DrawAtXY({this->GetPosition().x + j, this->GetPosition().y + i},
+                render.DrawAtXY(this->GetPosition() + Vector2i{j, i},
                                 {this->fill, this->GetForegroundColor(), this->GetBackgroundColor()});
             }
         }

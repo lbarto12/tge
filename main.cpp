@@ -33,8 +33,7 @@ public:
         this->SetTicksPerSecond(60);
 
         Construct("bg")([]() {
-            auto ts = tge::render::Terminal::Size();
-            auto c = new tge::Rectangle({ts.cols, ts.rows});
+            auto c = new tge::Rectangle(tge::render::Terminal::Size());
             c->SetForegroundColor(tge::Color::BrightBlack);
             return c;
         });
