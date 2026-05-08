@@ -111,14 +111,8 @@ public:
     }
 
     void Update() override {
-
-        auto d = tge::Keyboard::GetKeyDown(tge::Key::Down);
-        auto u = tge::Keyboard::GetKeyDown(tge::Key::Up);
-
-        if ((d || u) && !navigated) selected += d - u;
-        navigated = !(d || u);
-
-        selected = std::max(0, std::min(1, selected));
+        selected += downkey.SinglePress() - upkey.SinglePress();
+        selected = tge::Math::Clamp(0, 1, selected);
 
         // enter keypress
         if (tge::Keyboard::GetKeyDown(tge::Key::Enter)) {
@@ -135,8 +129,10 @@ public:
 
 private:
     int selected = 0;
-    bool navigated = false;
     bool &paused, &kill;
+
+    tge::KeyBuffer upkey = tge::Key::Up;
+    tge::KeyBuffer downkey = tge::Key::Down;
 };
 
 class SnakeGame : public tge::GameManager {
