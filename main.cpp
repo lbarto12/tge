@@ -10,11 +10,7 @@
 class Snake : public tge::ComponentBase {
 public:
     void Init() override {
-        this->moveDelay = tge::sync::Timer<std::chrono::milliseconds>(50);
-
-        auto ts = tge::render::Terminal::Size();
-
-        auto start = tge::Vector2i{ts.x / 4 * 2 + 1, ts.y / 4 * 2 + 1};
+        auto start = tge::render::Terminal::Size() / 4 * 2 + 1;
         segments.push_back(start);
         segments.push_back(start - tge::Vector2i{0, 1});
         segments.push_back(start - tge::Vector2i{0, 2});
@@ -58,7 +54,7 @@ private:
     tge::Vector2i vel, fruit;
     std::vector<tge::Vector2i> segments;
     int score = 0;
-    tge::sync::Timer<std::chrono::milliseconds> moveDelay;
+    tge::sync::Timer<std::chrono::milliseconds> moveDelay = 50;
 
 private:
     void randomizeFruit() {
