@@ -77,10 +77,7 @@ public:
 
     void Render() override {
         tge::BorderedRectangle::Render();
-
-        auto sz = this->GetSize();
-        auto pos = this->GetPosition();
-        auto cntr = sz / 2 + pos;
+        auto cntr = this->GetCenter();
 
         std::wstring menuTitle = L" PAUSED ";
         std::wstring resumeTxt = L" resume ";
