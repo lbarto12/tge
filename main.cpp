@@ -100,7 +100,7 @@ public:
 
         std::wstring menuTitle = L" PAUSED ";
         std::wstring resumeTxt = L" resume ";
-        std::wstring quitTxt = L" quit ";
+        std::wstring quitTxt = L"  quit  ";
 
         render.DrawStringAtXY(cntr + tge::Vector2i{-int(menuTitle.length() / 2), -1}, menuTitle, tge::Color::White,
                               tge::Color::BrightBlack);
@@ -158,11 +158,9 @@ public:
         }
 
         // Buffered key press
-        if (tge::Keyboard::GetKeyDown(tge::Key::Escape) && !pausing) {
+        if (pausekey.SinglePress()) {
             paused = !paused;
-            pausing = true;
         }
-        pausing = tge::Keyboard::GetKeyDown(tge::Key::Escape);
 
         if (!paused) {
             Get("snake")->Update();
@@ -178,7 +176,8 @@ public:
     }
 
 private:
-    bool paused = false, pausing = false, kill = false;
+    tge::KeyBuffer pausekey = tge::Key::Escape;
+    bool paused = false, kill = false;
 };
 
 int main() {
