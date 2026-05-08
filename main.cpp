@@ -69,10 +69,9 @@ public:
 
     void Init() override {
         auto sz = tge::render::Terminal::Size() / 2;
-        auto pos = sz - sz / 2;
 
         this->SetSize(sz);
-        this->SetPosition(pos);
+        this->SetCenter(sz);
         this->SetBorderFromStyle(tge::BorderedRectangle::Style::RoundedLine);
     }
 
