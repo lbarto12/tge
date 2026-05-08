@@ -1,6 +1,7 @@
 #include "tge/game.h"
 #include "tge/graphics.h"
 #include "tge/input.h"
+#include <algorithm>
 #include <chrono>
 #include <cstdlib>
 #include <string>
@@ -66,6 +67,78 @@ private:
     }
 };
 
+class PauseMenu : public tge::BorderedRectangle {
+public:
+    PauseMenu(bool& paused, bool& kill) : tge::BorderedRectangle(), paused(paused), kill(kill) {}
+
+    void Init() override {
+        auto ts = tge::render::Terminal::Size();
+        auto sz = tge::Vector2i{
+            ts.x / 2,
+            ts.y / 2,
+        };
+
+        auto pos = tge::Vector2i{
+            sz.x - (sz.x / 2),
+            sz.y - (sz.y / 2),
+        };
+
+        this->SetSize(sz);
+        this->SetPosition(pos);
+        this->SetBorderFromStyle(tge::BorderedRectangle::Style::RoundedLine);
+    }
+
+    void Render() override {
+        tge::BorderedRectangle::Render();
+
+        auto sz = this->GetSize();
+        auto pos = this->GetPosition();
+        auto cntr = tge::Vector2i{
+            sz.x / 2 + pos.x,
+            sz.y / 2 + pos.y,
+        };
+
+        std::wstring menuTitle = L" PAUSED ";
+        std::wstring resumeTxt = L" resume ";
+        std::wstring quitTxt = L" quit ";
+
+        render.DrawStringAtXY(cntr + tge::Vector2i{-int(menuTitle.length() / 2), -1}, menuTitle, tge::Color::White,
+                              tge::Color::BrightBlack);
+        render.DrawStringAtXY(cntr + tge::Vector2i{-int(resumeTxt.length() / 2), 1}, resumeTxt, tge::Color::White,
+                              selected == 0 ? tge::Color::BrightBlack : tge::Color::None);
+        render.DrawStringAtXY(cntr + tge::Vector2i{-int(quitTxt.length() / 2), 2}, quitTxt, tge::Color::White,
+                              selected == 1 ? tge::Color::BrightBlack : tge::Color::None);
+    }
+
+    void Update() override {
+
+        auto d = tge::Keyboard::GetKeyDown(tge::Key::Down);
+        auto u = tge::Keyboard::GetKeyDown(tge::Key::Up);
+
+        if ((d || u) && !navigated) selected += d - u;
+        navigated = !(d || u);
+
+        selected = std::max(0, std::min(1, selected));
+
+        // enter keypress
+        if (tge::Keyboard::GetKeyDown(tge::Key::Enter)) {
+            switch (selected) {
+            case 0:
+                paused = false;
+                break;
+            case 1:
+                kill = true;
+                break;
+            }
+        }
+    }
+
+private:
+    int selected = 0;
+    bool navigated = false;
+    bool &paused, &kill;
+};
+
 class SnakeGame : public tge::GameManager {
 public:
     SnakeGame() : tge::GameManager() {
@@ -75,30 +148,37 @@ public:
 
     void Start() override {
         Component<Snake>("snake");
-        Construct("btest")([]() {
-            auto c = new tge::BorderedRectangle();
-            c->SetBorderFromStyle(tge::BorderedRectangle::Style::RoundedLine);
-            c->SetBackgroundColor(tge::Color::Green);
-            c->SetBorderForegroundColor(tge::Color::Red);
-            c->SetBorderBackgroundColor(tge::Color::BrightCyan);
-            c->SetSize({20, 10});
-            c->SetPosition({10, 10});
-            return c;
-        });
+        // TODO: this concept is better as a view model I think
+        Construct("pause_menu")([this]() { return new PauseMenu(this->paused, this->kill); });
     }
 
     void Update() override {
-        if (tge::Keyboard::GetKeyDown('q')) {
+        if (this->kill) {
             this->Quit();
         }
 
-        Get("snake")->Update();
+        // Buffered key press
+        if (tge::Keyboard::GetKeyDown(tge::Key::Escape) && !pausing) {
+            paused = !paused;
+            pausing = true;
+        }
+        pausing = tge::Keyboard::GetKeyDown(tge::Key::Escape);
+
+        if (!paused) {
+            Get("snake")->Update();
+        } else
+            Get("pause_menu")->Update();
     }
 
     void Render() override {
         Get("snake")->Render();
-        Get("btest")->Render();
+        if (paused) {
+            Get("pause_menu")->Render();
+        }
     }
+
+private:
+    bool paused = false, pausing = false, kill = false;
 };
 
 int main() {

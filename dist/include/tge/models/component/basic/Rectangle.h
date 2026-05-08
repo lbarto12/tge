@@ -14,7 +14,7 @@ namespace tge {
 class Rectangle : public ComponentBase {
 public:
     TGE_BASIC_CONSTRUCT(Rectangle);
-    Rectangle(const Vector2i& size, const wchar_t fill = L'█') : ComponentBase(), fill(fill) { this->SetSize(size); }
+    Rectangle(const Vector2i& size, const wchar_t fill = L' ') : ComponentBase(), fill(fill) { this->SetSize(size); }
     Rectangle(const wchar_t fill) : ComponentBase(), fill(fill) {}
 
     /**
@@ -37,6 +37,6 @@ public:
     void SetFill(const wchar_t fill) { this->fill = fill; }
 
 private:
-    wchar_t fill = L'█';
+    wchar_t fill = L' ';
 };
 } // namespace tge
