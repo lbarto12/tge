@@ -10,6 +10,7 @@
 #include "models/component/Transformable.h"
 
 // Basic shapes
+#include "models/component/basic/BorderedRectangle.h"
 #include "models/component/basic/Rectangle.h"
 
 // Baseline terminal stuff

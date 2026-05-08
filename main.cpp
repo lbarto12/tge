@@ -73,7 +73,18 @@ public:
         this->SetTicksPerSecond(60);
     }
 
-    void Start() override { Component<Snake>("snake"); }
+    void Start() override {
+        Component<Snake>("snake");
+        Construct("btest")([]() {
+            auto c = new tge::BorderedRectangle();
+            c->SetBorderFromStyle(tge::BorderedRectangle::Style::RoundedLine);
+            c->SetBorderForegroundColor(tge::Color::Red);
+            c->SetBorderBackgroundColor(tge::Color::BrightCyan);
+            c->SetSize({20, 10});
+            c->SetPosition({10, 10});
+            return c;
+        });
+    }
 
     void Update() override {
         if (tge::Keyboard::GetKeyDown('q')) {
@@ -83,7 +94,10 @@ public:
         Get("snake")->Update();
     }
 
-    void Render() override { Get("snake")->Render(); }
+    void Render() override {
+        Get("snake")->Render();
+        Get("btest")->Render();
+    }
 };
 
 int main() {
