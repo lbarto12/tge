@@ -1,3 +1,6 @@
+#pragma once
+// IWYU pragma: private, include <tge/game.h>
+
 #include <chrono>
 #include <ratio>
 

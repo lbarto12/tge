@@ -1,4 +1,5 @@
 #pragma once
+// IWYU pragma: private, include <tge/graphics.h>
 
 #include "../models/util/Vector2.h"
 #include "Color.h"

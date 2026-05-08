@@ -1,4 +1,6 @@
-#include <iostream>
+#pragma once
+// IWYU pragma: private, include <tge/graphics.h>
+
 #include <unordered_map>
 
 #include "component/Component.h"

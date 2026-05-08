@@ -1,5 +1,3 @@
-
-
 #include "tge/game.h"
 #include "tge/graphics.h"
 #include "tge/input.h"
@@ -48,8 +46,7 @@ public:
     void Render() override {
         render.DrawStringAtXY(fruit, L"██", tge::Color::Red);
         for (const auto& segment : segments) {
-            render.DrawAtXY(segment, tge::render::Pixel{L'█', tge::Color::Blue});
-            render.DrawAtXY(tge::Vector2i{segment.x + 1, segment.y}, tge::render::Pixel{L'█', tge::Color::Blue});
+            render.DrawStringAtXY(segment, L"██", tge::Color::Blue);
         }
 
         render.DrawStringAtXY({0, 0}, L"length: " + std::to_wstring(segments.size()));

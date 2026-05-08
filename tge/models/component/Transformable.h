@@ -1,3 +1,6 @@
+#pragma once
+// IWYU pragma: private, include <tge/graphics.h>
+
 #include "../util/Bounds.h"
 #include "../util/Vector2.h"
 

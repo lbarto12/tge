@@ -1,4 +1,6 @@
 #pragma once
+// IWYU pragma: private, include <tge/game.h>
+
 #include "../input/Keyboard.h"
 #include "../render/ScreenBuffer.h"
 #include "../render/Terminal.h"

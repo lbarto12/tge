@@ -1,3 +1,6 @@
+#pragma once
+// IWYU pragma: private, include <tge/graphics.h>
+
 #include "../../render/ScreenBuffer.h"
 
 /**

@@ -1,4 +1,5 @@
 #pragma once
+// IWYU pragma: private, include <tge/graphics.h>
 
 namespace tge {
 template <typename T> struct Rect {

@@ -1,4 +1,5 @@
 #pragma once
+// IWYU pragma: private, include <tge/input.h>
 #include <cctype>
 #include <optional>
 

@@ -1,6 +1,5 @@
 #pragma once
-
-#include <iostream>
+// IWYU pragma: private, include <tge/graphics.h>
 
 #include "../../input/Keyboard.h"
 #include "Drawable.h"
