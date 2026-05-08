@@ -72,16 +72,8 @@ public:
     PauseMenu(bool& paused, bool& kill) : tge::BorderedRectangle(), paused(paused), kill(kill) {}
 
     void Init() override {
-        auto ts = tge::render::Terminal::Size();
-        auto sz = tge::Vector2i{
-            ts.x / 2,
-            ts.y / 2,
-        };
-
-        auto pos = tge::Vector2i{
-            sz.x - (sz.x / 2),
-            sz.y - (sz.y / 2),
-        };
+        auto sz = tge::render::Terminal::Size() / 2;
+        auto pos = sz - sz / 2;
 
         this->SetSize(sz);
         this->SetPosition(pos);
@@ -93,10 +85,7 @@ public:
 
         auto sz = this->GetSize();
         auto pos = this->GetPosition();
-        auto cntr = tge::Vector2i{
-            sz.x / 2 + pos.x,
-            sz.y / 2 + pos.y,
-        };
+        auto cntr = sz / 2 + pos;
 
         std::wstring menuTitle = L" PAUSED ";
         std::wstring resumeTxt = L" resume ";
