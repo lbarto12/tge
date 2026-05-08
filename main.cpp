@@ -59,7 +59,7 @@ private:
 private:
     void randomizeFruit() {
         auto ts = tge::render::Terminal::Size();
-        this->fruit = {(std::rand() % ts.x) / 2 * 2 + 1, (std::rand() % ts.y) / 2 * 2 + 1};
+        this->fruit = tge::Vector2i{(std::rand() % ts.x - 1), (std::rand() % ts.y - 1)} / 2 * 2 + 1;
     }
 };
 
