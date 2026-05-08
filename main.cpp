@@ -78,6 +78,7 @@ public:
         Construct("btest")([]() {
             auto c = new tge::BorderedRectangle();
             c->SetBorderFromStyle(tge::BorderedRectangle::Style::RoundedLine);
+            c->SetBackgroundColor(tge::Color::Green);
             c->SetBorderForegroundColor(tge::Color::Red);
             c->SetBorderBackgroundColor(tge::Color::BrightCyan);
             c->SetSize({20, 10});
