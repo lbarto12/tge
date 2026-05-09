@@ -28,8 +28,16 @@ enum class Color : uint8_t {
 
 inline constexpr const char* RESET = "\033[0m";
 
-inline std::string fg(uint8_t code) { return "\033[38;5;" + std::to_string(code) + "m"; }
-inline std::string bg(uint8_t code) { return "\033[48;5;" + std::to_string(code) + "m"; }
+inline std::string fg(uint8_t code) {
+    if (code < 8) return "\033[" + std::to_string(30 + code) + "m";
+    if (code < 16) return "\033[" + std::to_string(90 + (code - 8)) + "m";
+    return "\033[38;5;" + std::to_string(code) + "m";
+}
+inline std::string bg(uint8_t code) {
+    if (code < 8) return "\033[" + std::to_string(40 + code) + "m";
+    if (code < 16) return "\033[" + std::to_string(100 + (code - 8)) + "m";
+    return "\033[48;5;" + std::to_string(code) + "m";
+}
 
 inline std::string fg(Color c) { return fg(static_cast<uint8_t>(c)); }
 inline std::string bg(Color c) { return bg(static_cast<uint8_t>(c)); }
