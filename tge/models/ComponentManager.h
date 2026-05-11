@@ -43,8 +43,18 @@ public:
      *
      * @param id the ID of the component
      */
-    template <typename T = ComponentBase> T* getComponent(const std::string id) {
+    template <typename T = ComponentBase> T* getComponent(const std::string& id) {
         return static_cast<T*>(this->components[id]);
+    }
+
+    /**
+     * Remove a component by its ID.
+     *
+     * @param id the ID of the component
+     */
+    void removeComponent(const std::string& id) {
+        delete this->components[id];
+        this->components.erase(id);
     }
 
     /**

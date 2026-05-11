@@ -151,6 +151,13 @@ protected:
         return this->components.getComponent<T>(id);
     }
 
+    /**
+     * Remove a component from the game's storage.
+     *
+     * @param id the ID of the component
+     */
+    void Destroy(const std::string& id) { this->components.removeComponent(id); }
+
 private:
     bool running = true;
     sync::Timer<std::chrono::milliseconds> renderFps;
