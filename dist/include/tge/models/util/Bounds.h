@@ -1,12 +1,16 @@
 #pragma once
 // IWYU pragma: private, include <tge/graphics.h>
 
+#include "Vector2.h"
+
 namespace tge {
 template <typename T> struct Rect {
     T x;
     T y;
     T width;
     T height;
+
+    Vector2<T> GetCenter() const { return Vector2<T>{width, height} / 2 + Vector2<T>{x, y}; }
 
     bool Intersects(const Rect<T>& other) const {
         return x < other.x + other.width && x + width > other.x && y < other.y + other.height && y + height > other.y;

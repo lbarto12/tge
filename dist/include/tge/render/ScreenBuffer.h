@@ -4,6 +4,7 @@
 #include "../models/util/Vector2.h"
 #include "Color.h"
 #include "Terminal.h"
+#include <cwchar>
 #include <string>
 #include <utility>
 
@@ -42,23 +43,46 @@ public:
     }
 
     void SwapBuffer() {
+#if defined(_WIN32)
+        // Build entire frame as wide chars and flush with one WriteConsoleW call
+        // dumb ahh windows.
+        std::wstring out;
+        out.reserve(static_cast<std::size_t>(this->size.x) * this->size.y * 24);
+
+        auto appendN = [&out](const std::string& s) {
+            for (unsigned char c : s) out += static_cast<wchar_t>(c);
+        };
+
+        wchar_t posbuf[32];
         for (int i = 0; i < this->size.y; ++i) {
             for (int j = 0; j < this->size.x; ++j) {
                 if (!didPixelChange({j, i})) continue;
-
-                // We have a changed pixel, moveto it and render
                 const Pixel& p = this->next[i][j];
-
+                out.append(posbuf, std::swprintf(posbuf, 32, L"\033[%d;%dH", i + 1, j + 1));
+                appendN(RESET);
+                if (p.fg != Color::None) appendN(fg(p.fg));
+                if (p.bg != Color::None) appendN(bg(p.bg));
+                out += p.c;
+            }
+        }
+        appendN(RESET);
+        DWORD written;
+        WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), out.data(), static_cast<DWORD>(out.size()), &written, nullptr);
+#else
+        for (int i = 0; i < this->size.y; ++i) {
+            for (int j = 0; j < this->size.x; ++j) {
+                if (!didPixelChange({j, i})) continue;
+                const Pixel& p = this->next[i][j];
                 Terminal::MoveTo(j, i);
                 Terminal::ResetStyle();
                 if (p.fg != Color::None) tge::render::Terminal::SetForeground(p.fg);
                 if (p.bg != Color::None) tge::render::Terminal::SetBackground(p.bg);
-
                 std::printf("%lc", static_cast<wint_t>(p.c));
             }
         }
         Terminal::ResetStyle();
         std::fflush(stdout);
+#endif
         std::swap(this->buffer, this->next);
         clearBuffer(this->next);
     }
