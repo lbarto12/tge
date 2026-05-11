@@ -28,7 +28,7 @@ public:
         if (tge::Keyboard::GetKeyDown(tge::Key::Down)) vel = {0, 1};
 
         if (moveDelay.Await()) {
-            auto newHead = segments[0] + vel;
+            auto newHead = tge::Math::Wrap({0, 0}, tge::render::Terminal::Size() / 2 * 2, segments[0] + vel);
             segments.insert(segments.begin(), newHead);
             segments.pop_back();
 
