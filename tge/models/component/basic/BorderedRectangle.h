@@ -65,7 +65,7 @@ private:
     BorderSet bs = getBorderSetFromStyle(Style::Line); // Default to solid, squared line
     Color borderBgColor = Color::None, borderFgColor = Color::White;
 
-    BorderSet getBorderSetFromStyle(Style style) {
+    static BorderSet getBorderSetFromStyle(Style style) {
         switch (style) {
         case Style::Line:
             return BorderSet{L'┌', L'┐', L'┘', L'└', L'│', L'─', L'│', L'─'};
