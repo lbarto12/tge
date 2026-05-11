@@ -9,10 +9,12 @@ template <typename T> struct Vector2 {
     Vector2<T> operator-(const Vector2<T>& other) const { return {x - other.x, y - other.y}; }
     Vector2<T> operator*(const Vector2<T>& other) const { return {x * other.x, y * other.y}; }
     Vector2<T> operator/(const Vector2<T>& other) const { return {x / other.x, y / other.y}; }
+    Vector2<T> operator%(const Vector2<T>& other) const { return {x % other.x, y % other.y}; }
     Vector2<T> operator+(T s) const { return {x + s, y + s}; }
     Vector2<T> operator-(T s) const { return {x - s, y - s}; }
     Vector2<T> operator*(T s) const { return {x * s, y * s}; }
     Vector2<T> operator/(T s) const { return {x / s, y / s}; }
+    Vector2<T> operator%(T s) const { return {x % s, y % s}; }
 };
 
 typedef Vector2<float> Vector2f;
