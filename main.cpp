@@ -16,27 +16,27 @@ public:
         segments.push_back(start - tge::Vector2i{0, 2});
         segments.push_back(start - tge::Vector2i{0, 3});
 
-        vel = {0, -1};
+        vel = {0, 1};
 
         randomizeFruit();
     }
 
     void Update() override {
-        if (tge::Keyboard::GetKeyDown(tge::Key::Up)) vel = {0, -1};
-        if (tge::Keyboard::GetKeyDown(tge::Key::Right)) vel = {2, 0};
-        if (tge::Keyboard::GetKeyDown(tge::Key::Left)) vel = {-2, 0};
-        if (tge::Keyboard::GetKeyDown(tge::Key::Down)) vel = {0, 1};
+        if (tge::Keyboard::GetKeyDown(tge::Key::Up) && vel != tge::Vector2i{0, 1}) vel = {0, -1};
+        if (tge::Keyboard::GetKeyDown(tge::Key::Right) && vel != tge::Vector2i{-2, 0}) vel = {2, 0};
+        if (tge::Keyboard::GetKeyDown(tge::Key::Left) && vel != tge::Vector2i{2, 0}) vel = {-2, 0};
+        if (tge::Keyboard::GetKeyDown(tge::Key::Down) && vel != tge::Vector2i{0, -1}) vel = {0, 1};
 
-        if (moveDelay.Await()) {
-            auto newHead = tge::Math::Wrap({0, 0}, tge::Terminal::Size() / 2 * 2, segments[0] + vel);
-            segments.insert(segments.begin(), newHead);
-            segments.pop_back();
+        if (!moveDelay.Await()) return;
 
-            if (newHead == fruit) {
-                score += 1;
-                randomizeFruit();
-                segments.push_back(segments.back());
-            }
+        auto newHead = tge::Math::Wrap({0, 0}, tge::Terminal::Size() / 2 * 2, segments[0] + vel);
+        segments.insert(segments.begin(), newHead);
+        segments.pop_back();
+
+        if (newHead == fruit) {
+            score += 1;
+            randomizeFruit();
+            segments.push_back(segments.back());
         }
     }
 
