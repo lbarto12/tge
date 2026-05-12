@@ -7,6 +7,9 @@
 #include <string>
 #include <vector>
 
+// define that this program will use awaits.
+using namespace tge::sync::awaits;
+
 class Snake : public tge::ComponentBase {
 public:
     void Init() override {
@@ -27,7 +30,7 @@ public:
         if (tge::Keyboard::GetKeyDown(tge::Key::Left) && vel != tge::Vector2i{2, 0}) vel = {-2, 0};
         if (tge::Keyboard::GetKeyDown(tge::Key::Down) && vel != tge::Vector2i{0, -1}) vel = {0, 1};
 
-        if (!moveDelay.Await()) return;
+        if (!Await(&moveDelay)) return;
 
         auto newHead = tge::Math::Wrap({0, 0}, tge::Terminal::Size() / 2 * 2, segments[0] + vel);
         segments.insert(segments.begin(), newHead);
