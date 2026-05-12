@@ -75,8 +75,8 @@ public:
                 const Pixel& p = this->next[i][j];
                 Terminal::MoveTo(j, i);
                 Terminal::ResetStyle();
-                if (p.fg != Color::None) tge::render::Terminal::SetForeground(p.fg);
-                if (p.bg != Color::None) tge::render::Terminal::SetBackground(p.bg);
+                if (p.fg != Color::None) tge::Terminal::SetForeground(p.fg);
+                if (p.bg != Color::None) tge::Terminal::SetBackground(p.bg);
                 std::printf("%lc", static_cast<wint_t>(p.c));
             }
         }
@@ -133,6 +133,6 @@ public:
 };
 
 // TODO: move to cpp
-ScreenBuffer ScreenBuffer::globalScreenBuffer(tge::render::Terminal::Size());
+ScreenBuffer ScreenBuffer::globalScreenBuffer(tge::Terminal::Size());
 
 } // namespace tge::render

@@ -16,7 +16,7 @@
 #include <unistd.h>
 #endif
 
-namespace tge::render {
+namespace tge {
 
 struct TerminalSize {
     int cols;
@@ -137,4 +137,4 @@ bool isTerminalFocused();
 #endif
 
 } // namespace platform
-} // namespace tge::render
+} // namespace tge

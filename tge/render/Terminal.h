@@ -7,7 +7,7 @@
 #include "Color.h"
 #include "Platform.h"
 
-namespace tge::render {
+namespace tge {
 
 class Terminal {
 public:
@@ -56,4 +56,4 @@ public:
     static void Flush() { std::fflush(stdout); }
 };
 
-} // namespace tge::render
+} // namespace tge

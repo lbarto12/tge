@@ -10,7 +10,7 @@
 class Snake : public tge::ComponentBase {
 public:
     void Init() override {
-        auto start = tge::render::Terminal::Size() / 4 * 2 + 1;
+        auto start = tge::Terminal::Size() / 4 * 2 + 1;
         segments.push_back(start);
         segments.push_back(start - tge::Vector2i{0, 1});
         segments.push_back(start - tge::Vector2i{0, 2});
@@ -28,7 +28,7 @@ public:
         if (tge::Keyboard::GetKeyDown(tge::Key::Down)) vel = {0, 1};
 
         if (moveDelay.Await()) {
-            auto newHead = tge::Math::Wrap({0, 0}, tge::render::Terminal::Size() / 2 * 2, segments[0] + vel);
+            auto newHead = tge::Math::Wrap({0, 0}, tge::Terminal::Size() / 2 * 2, segments[0] + vel);
             segments.insert(segments.begin(), newHead);
             segments.pop_back();
 
@@ -58,7 +58,7 @@ private:
 
 private:
     void randomizeFruit() {
-        auto ts = tge::render::Terminal::Size();
+        auto ts = tge::Terminal::Size();
         this->fruit = tge::Vector2i{(std::rand() % ts.x - 1), (std::rand() % ts.y - 1)} / 2 * 2 + 1;
     }
 };
@@ -68,7 +68,7 @@ public:
     PauseMenu(bool& paused, bool& kill) : tge::BorderedRectangle(), paused(paused), kill(kill) {}
 
     void Init() override {
-        auto sz = tge::render::Terminal::Size() / 2;
+        auto sz = tge::Terminal::Size() / 2;
 
         this->SetSize(sz);
         this->SetCenter(sz);
@@ -130,7 +130,7 @@ public:
     }
 
     void Update() override {
-        if (!tge::render::Terminal::IsFocused()) {
+        if (!tge::Terminal::IsFocused()) {
             return;
         }
 
@@ -201,7 +201,7 @@ int main() {
 //         this->SetTicksPerSecond(60);
 //
 //         Construct("bg")([]() {
-//             auto c = new tge::Rectangle(tge::render::Terminal::Size());
+//             auto c = new tge::Rectangle(tge::Terminal::Size());
 //             c->SetForegroundColor(tge::Color::BrightBlack);
 //             return c;
 //         });

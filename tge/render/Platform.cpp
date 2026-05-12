@@ -7,7 +7,7 @@
 #include <sys/select.h>
 #include <unistd.h>
 
-namespace tge::render::platform {
+namespace tge::platform {
 
 static std::atomic<bool> g_focused{true};
 static bool g_enabled = false;
@@ -50,5 +50,5 @@ bool isTerminalFocused() {
     return g_focused.load(std::memory_order_relaxed);
 }
 
-} // namespace tge::render::platform
+} // namespace tge::platform
 #endif

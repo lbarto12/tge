@@ -10,10 +10,10 @@
 
 class Cube : public tge::ComponentBase {
 public:
-    void Init() override { resize(tge::render::Terminal::Size()); }
+    void Init() override { resize(tge::Terminal::Size()); }
 
     void Update() override {
-        auto ts = tge::render::Terminal::Size();
+        auto ts = tge::Terminal::Size();
         if (ts != termSize) resize(ts);
 
         if (rotationTick.Await()) {

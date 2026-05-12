@@ -43,16 +43,16 @@ public:
      * @return graceful exit
      */
     bool Run() {
-        render::Terminal::Init();
+        Terminal::Init();
 
         // Safety net for abnormal exits - raw mode would otherwise leak into the user's shell.
         std::atexit([] {
-            render::Terminal::DisableRawMode();
+            Terminal::DisableRawMode();
             tge::Keyboard::Shutdown();
         });
 
         if (!tge::Keyboard::Init()) {
-            render::Terminal::UnMount();
+            Terminal::UnMount();
             return false;
         }
 
@@ -68,7 +68,7 @@ public:
         }
 
         tge::Keyboard::Shutdown();
-        render::Terminal::UnMount();
+        Terminal::UnMount();
         return true;
     }
 
