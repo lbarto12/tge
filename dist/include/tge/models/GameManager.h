@@ -15,6 +15,8 @@
 const long long DEFAULT_RENDER_FPS = 60; // fps
 const long long DEFAULT_TICK_SPEED = 60; // tps
 
+using namespace tge::sync::awaits;
+
 namespace tge {
 class GameManager {
 public:
@@ -58,10 +60,10 @@ public:
 
         this->Start();
         while (this->running) {
-            if (this->tickSpeed.Await()) {
+            if (Await(&tickSpeed)) {
                 this->internal_update();
             }
-            if (this->renderFps.Await()) {
+            if (Await(&renderFps)) {
                 this->internal_render();
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(1)); // no runaway cpu shit
