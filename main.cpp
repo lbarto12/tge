@@ -130,6 +130,10 @@ public:
     }
 
     void Update() override {
+        if (!tge::render::Terminal::IsFocused()) {
+            return;
+        }
+
         if (this->kill) {
             this->Quit();
         }

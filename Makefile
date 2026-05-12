@@ -42,4 +42,5 @@ endif
 	@echo "Done → dist/"
 
 clean:
-	rm -f $(TARGET) $(GAME_OBJS) $(TGE_OBJS) libtge.so
+	rm -f $(TARGET) libtge.so
+	find . -name '*.o' -delete

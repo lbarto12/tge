@@ -44,6 +44,8 @@ public:
     static bool EnableRawMode() { return platform::enableRawMode(); }
     static void DisableRawMode() { platform::disableRawMode(); }
 
+    static bool IsFocused() { return platform::isTerminalFocused(); }
+
     static void UnMount() {
         Clear();
         ResetStyle();

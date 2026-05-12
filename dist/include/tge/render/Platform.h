@@ -83,6 +83,12 @@ inline void disableRawMode() {
     s.saved = false;
 }
 
+inline bool isTerminalFocused() {
+    HWND console = GetConsoleWindow();
+    HWND fg = GetForegroundWindow();
+    return console == fg;
+}
+
 #else // POSIX
 
 struct ModeState {
@@ -125,6 +131,8 @@ inline void disableRawMode() {
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &s.original);
     s.saved = false;
 }
+
+bool isTerminalFocused();
 
 #endif
 
