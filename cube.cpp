@@ -200,7 +200,7 @@ private:
     std::vector<tge::Color> colorBuf;
     std::vector<float> depthBuf;
     tge::Vector3f angles{0, 0, 0}; // current rotation in degrees per axis
-    tge::sync::Timer<std::chrono::milliseconds> rotationTick = TICK_MS;
+    tge::Timer<std::chrono::milliseconds> rotationTick = TICK_MS;
 };
 
 class CubeDemo : public tge::GameManager {

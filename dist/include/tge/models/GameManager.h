@@ -15,7 +15,7 @@
 const long long DEFAULT_RENDER_FPS = 60; // fps
 const long long DEFAULT_TICK_SPEED = 60; // tps
 
-using namespace tge::sync::awaits;
+using namespace tge::async;
 
 namespace tge {
 class GameManager {
@@ -85,9 +85,7 @@ protected:
      *
      * @param fps frames to render per second
      */
-    void SetFPS(long long fps) {
-        this->renderFps = sync::Timer<std::chrono::milliseconds>{calcTimerDurationFromFPS(fps)};
-    }
+    void SetFPS(long long fps) { this->renderFps = Timer<std::chrono::milliseconds>{calcTimerDurationFromFPS(fps)}; }
 
     /**
      * Set the game's TPS. TPS is used only for logic updates.
@@ -95,7 +93,7 @@ protected:
      * @param tps game logic ticks per second
      */
     void SetTicksPerSecond(long long tps) {
-        this->tickSpeed = sync::Timer<std::chrono::milliseconds>{calcTimerDurationFromFPS(tps)};
+        this->tickSpeed = Timer<std::chrono::milliseconds>{calcTimerDurationFromFPS(tps)};
     }
 
 private:
@@ -162,8 +160,8 @@ protected:
 
 private:
     bool running = true;
-    sync::Timer<std::chrono::milliseconds> renderFps;
-    sync::Timer<std::chrono::milliseconds> tickSpeed;
+    Timer<std::chrono::milliseconds> renderFps;
+    Timer<std::chrono::milliseconds> tickSpeed;
 
 private:
     long long calcTimerDurationFromFPS(long long perSecond) { return 1000 / perSecond; }

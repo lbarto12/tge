@@ -6,8 +6,8 @@
 
 #include "Awaitable.h"
 
-namespace tge::sync {
-template <typename TimeUnit> struct Timer : public awaits::Awaitable {
+namespace tge {
+template <typename TimeUnit> struct Timer : public async::Awaitable {
     using Clock = std::chrono::high_resolution_clock;
     using TimePoint = Clock::time_point;
 
@@ -32,4 +32,4 @@ private:
     TimeUnit interval;
     TimePoint last;
 };
-} // namespace tge::sync
+} // namespace tge

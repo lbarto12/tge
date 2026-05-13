@@ -5,8 +5,8 @@
 #include <initializer_list>
 #include <vector>
 
-namespace tge::sync {
-struct AwaitGroup : public awaits::Awaitable {
+namespace tge::async {
+struct AwaitGroup : public Awaitable {
     AwaitGroup(std::initializer_list<Awaitable*> awaits) : awaits(awaits) {}
 
     bool Await() override {
@@ -19,4 +19,4 @@ struct AwaitGroup : public awaits::Awaitable {
 private:
     std::vector<Awaitable*> awaits;
 };
-} // namespace tge::sync
+} // namespace tge::async

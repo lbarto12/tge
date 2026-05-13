@@ -8,7 +8,7 @@
 #include <vector>
 
 // define that this program will use awaits.
-using namespace tge::sync::awaits;
+using namespace tge::async;
 
 class Snake : public tge::ComponentBase {
 public:
@@ -57,7 +57,7 @@ private:
     tge::Vector2i vel, fruit;
     std::vector<tge::Vector2i> segments;
     int score = 0;
-    tge::sync::Timer<std::chrono::milliseconds> moveDelay = 50;
+    tge::Timer<std::chrono::milliseconds> moveDelay = 50;
 
 private:
     void randomizeFruit() {
