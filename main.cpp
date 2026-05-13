@@ -5,6 +5,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <string>
+#include <tge/game.h>
 #include <vector>
 
 // define that this program will use awaits.
@@ -101,7 +102,7 @@ public:
     }
 
     void Update() override {
-        selected += downkey.SinglePress() - upkey.SinglePress();
+        selected += Await(&downkey) - Await(&upkey);
         selected = tge::Math::Clamp(0, 1, selected);
 
         // enter keypress
@@ -148,7 +149,7 @@ public:
         }
 
         // Buffered key press
-        if (pausekey.SinglePress()) {
+        if (Await(&pausekey)) {
             state.paused = !state.paused;
         }
 
