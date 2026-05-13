@@ -10,6 +10,12 @@
 // define that this program will use awaits.
 using namespace tge::async;
 
+// Game state view model
+struct GameState {
+    bool paused = false;
+    bool kill = false;
+};
+
 class Snake : public tge::ComponentBase {
 public:
     void Init() override {
@@ -68,7 +74,7 @@ private:
 
 class PauseMenu : public tge::BorderedRectangle {
 public:
-    PauseMenu(bool& paused, bool& kill) : tge::BorderedRectangle(), paused(paused), kill(kill) {}
+    PauseMenu(GameState& state) : tge::BorderedRectangle(), state(state) {}
 
     void Init() override {
         auto sz = tge::Terminal::Size() / 2;
@@ -102,10 +108,10 @@ public:
         if (tge::Keyboard::GetKeyDown(tge::Key::Enter)) {
             switch (selected) {
             case 0:
-                paused = false;
+                state.paused = false;
                 break;
             case 1:
-                kill = true;
+                state.kill = true;
                 break;
             }
         }
@@ -113,7 +119,7 @@ public:
 
 private:
     int selected = 0;
-    bool &paused, &kill;
+    GameState& state;
 
     tge::KeyBuffer upkey = tge::Key::Up;
     tge::KeyBuffer downkey = tge::Key::Down;
@@ -129,7 +135,7 @@ public:
     void Start() override {
         Component<Snake>("snake");
         // TODO: this concept is better as a view model I think
-        Construct("pause_menu")([this]() { return new PauseMenu(this->paused, this->kill); });
+        Construct("pause_menu")([this]() { return new PauseMenu(state); });
     }
 
     void Update() override {
@@ -137,16 +143,16 @@ public:
             return;
         }
 
-        if (this->kill) {
+        if (state.kill) {
             this->Quit();
         }
 
         // Buffered key press
         if (pausekey.SinglePress()) {
-            paused = !paused;
+            state.paused = !state.paused;
         }
 
-        if (!paused) {
+        if (!state.paused) {
             Get("snake")->Update();
         } else
             Get("pause_menu")->Update();
@@ -154,14 +160,14 @@ public:
 
     void Render() override {
         Get("snake")->Render();
-        if (paused) {
+        if (state.paused) {
             Get("pause_menu")->Render();
         }
     }
 
 private:
     tge::KeyBuffer pausekey = tge::Key::Escape;
-    bool paused = false, kill = false;
+    GameState state;
 };
 
 int main() {
