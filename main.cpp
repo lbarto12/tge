@@ -5,7 +5,6 @@
 #include <chrono>
 #include <cstdlib>
 #include <string>
-#include <tge/game.h>
 #include <vector>
 
 // define that this program will use awaits.
