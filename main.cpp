@@ -13,8 +13,9 @@ using namespace tge::async;
 // Game state view model
 struct GameState {
     bool paused = false;
-    bool kill = false;
 };
+
+struct GameExitEvent : public tge::Event {};
 
 class Snake : public tge::ComponentBase {
 public:
@@ -111,7 +112,7 @@ public:
                 state.paused = false;
                 break;
             case 1:
-                state.kill = true;
+                PushEvent(GameExitEvent{});
                 break;
             }
         }
@@ -143,7 +144,7 @@ public:
             return;
         }
 
-        if (state.kill) {
+        if (!GetEvents<GameExitEvent>().empty()) {
             this->Quit();
         }
 

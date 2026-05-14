@@ -1,6 +1,7 @@
 #pragma once
 // IWYU pragma: private, include <tge/game.h>
 
+#include "../event/Event.h"
 #include "../input/Keyboard.h"
 #include "../render/ScreenBuffer.h"
 #include "../render/Terminal.h"
@@ -31,7 +32,10 @@ public:
     virtual void Update() {}
 
 private: // Internal loops and inits
-    void internal_update() { this->Update(); }
+    void internal_update() {
+        this->Update();
+        this->events.StageNextTickEvents();
+    }
 
     void internal_render() {
         this->Render();
@@ -101,6 +105,12 @@ private:
 
 protected:
     tge::render::ScreenBuffer& render = tge::render::ScreenBuffer::globalScreenBuffer;
+    tge::EventManager& events = tge::EventManager::globalEventManager;
+
+protected:
+    template <typename EventType = Event> std::vector<EventType*> GetEvents() { return events.Get<EventType>(); }
+
+    template <typename EventType = Event> void PushEvent(EventType event) { this->events.Push(std::move(event)); }
 
 protected:
     /**
