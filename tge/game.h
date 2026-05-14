@@ -6,3 +6,6 @@
 #include "sync/Timer.h"
 
 #include "event/Event.h"
+
+#include "math/Math.h"
+#include "math/Random.h"

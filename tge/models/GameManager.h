@@ -10,6 +10,7 @@
 
 #include <chrono>
 #include <cstdlib>
+#include <ctime>
 #include <functional>
 #include <thread>
 
@@ -25,6 +26,7 @@ public:
         this->SetFPS(DEFAULT_RENDER_FPS);
         this->SetTicksPerSecond(DEFAULT_TICK_SPEED);
         std::setlocale(LC_ALL, "");
+        std::srand(time(NULL));
     }
 
     virtual void Start() {}

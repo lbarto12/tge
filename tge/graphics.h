@@ -1,7 +1,6 @@
 #pragma once
 
 // Utils
-#include "math/Math.h"
 #include "models/util/Bounds.h"
 #include "models/util/Vector2.h"
 

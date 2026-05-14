@@ -28,7 +28,6 @@ public:
         segments.push_back(start - tge::Vector2i{0, 3});
 
         vel = {0, 1};
-
         randomizeFruit();
     }
 
@@ -70,7 +69,7 @@ private:
 private:
     void randomizeFruit() {
         auto ts = tge::Terminal::Size();
-        this->fruit = tge::Vector2i{(std::rand() % ts.x - 1), (std::rand() % ts.y - 1)} / 2 * 2 + 1;
+        fruit = tge::Random::Vector2(2, ts.x - 1, 2, ts.y - 1) / 2 * 2 - 1;
     }
 };
 
