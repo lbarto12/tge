@@ -210,7 +210,7 @@ public:
         this->SetTicksPerSecond(60);
     }
 
-    void Start() override { Component<Cube>("cube"); }
+    void Start() override { Component<Cube>("cube")(); }
 
     void Update() override {
         if (tge::Keyboard::GetKeyDown(tge::Key::Escape) || tge::Keyboard::GetKeyDown('q')) {

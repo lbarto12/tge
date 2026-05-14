@@ -134,9 +134,8 @@ public:
     }
 
     void Start() override {
-        Component<Snake>("snake");
-        // TODO: this concept is better as a view model I think
-        Construct("pause_menu")([this]() { return new PauseMenu(); });
+        Component<Snake>("snake")();
+        Component<PauseMenu>("pause_menu")();
     }
 
     void Update() override {
