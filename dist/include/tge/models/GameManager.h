@@ -118,36 +118,15 @@ protected:
      * Add component to component manager.
      *
      * @param id the ID for the created component
-     * @return the created component
+     * @return A function to construct the component
      */
-    template <typename T = class ComponentBase> T* Component(const std::string& id) {
-        T* component = this->components.addComponent<T>(id);
-        component->Init();
-        return component;
-    }
-
-    /**
-     * Construct a component from an initilization function.
-     *
-     * This function returns a function that accepts a lambda.
-     * This lambda must return some derivative of `ComponentBase`
-     *
-     * Example usage
-     * ```
-     * Construct("my_id")([someArg, ...](){
-     *  return new CustomComponent(someArg, ...);
-     * });
-     *```
-     *
-     * @param id the ID of the new component
-     */
-    template <typename T = class ComponentBase>
-    std::function<T*(std::function<T*()>)> Construct(const std::string& id) {
-        return [this, id](std::function<T*()> creator) -> T* {
-            T* component = creator();
-            component->Init();
-            this->components.addConstructedComponent(id, component);
-            return components.getComponent<T>(id);
+    template <typename T> [[nodiscard]] auto Component(const std::string& id) {
+        return [this, id](auto&&... args) -> T* {
+            auto ptr = std::make_unique<T>(std::forward<decltype(args)>(args)...);
+            ptr->Init();
+            T* raw = ptr.get();
+            this->components.addOwned(id, std::move(ptr));
+            return raw;
         };
     }
 
