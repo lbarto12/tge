@@ -16,6 +16,7 @@ struct GameState {
 };
 
 struct GameExitEvent : public tge::Event {};
+struct PauseToggledEvent : public tge::Event {};
 
 class Snake : public tge::ComponentBase {
 public:
@@ -75,7 +76,7 @@ private:
 
 class PauseMenu : public tge::BorderedRectangle {
 public:
-    PauseMenu(GameState& state) : tge::BorderedRectangle(), state(state) {}
+    PauseMenu() : tge::BorderedRectangle() {}
 
     void Init() override {
         auto sz = tge::Terminal::Size() / 2;
@@ -109,7 +110,7 @@ public:
         if (tge::Keyboard::GetKeyDown(tge::Key::Enter)) {
             switch (selected) {
             case 0:
-                state.paused = false;
+                PushEvent(PauseToggledEvent{});
                 break;
             case 1:
                 PushEvent(GameExitEvent{});
@@ -120,7 +121,6 @@ public:
 
 private:
     int selected = 0;
-    GameState& state;
 
     tge::KeyBuffer upkey = tge::Key::Up;
     tge::KeyBuffer downkey = tge::Key::Down;
@@ -136,7 +136,7 @@ public:
     void Start() override {
         Component<Snake>("snake");
         // TODO: this concept is better as a view model I think
-        Construct("pause_menu")([this]() { return new PauseMenu(state); });
+        Construct("pause_menu")([this]() { return new PauseMenu(); });
     }
 
     void Update() override {
@@ -149,7 +149,7 @@ public:
         }
 
         // Buffered key press
-        if (Await(&pausekey)) {
+        if (Await(&pausekey) || !GetEvents<PauseToggledEvent>().empty()) {
             state.paused = !state.paused;
         }
 
