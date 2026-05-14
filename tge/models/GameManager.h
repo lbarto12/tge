@@ -118,9 +118,9 @@ protected:
      * Add component to component manager.
      *
      * @param id the ID for the created component
-     * @return the created component
+     * @return A function to construct the component
      */
-    template <typename T> auto Component(const std::string& id) {
+    template <typename T> [[nodiscard]] auto Component(const std::string& id) {
         return [this, id](auto&&... args) -> T* {
             auto ptr = std::make_unique<T>(std::forward<decltype(args)>(args)...);
             ptr->Init();
