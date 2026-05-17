@@ -143,6 +143,17 @@ protected:
     }
 
     /**
+     * Get a shared_ptr to a component from the game's storage. Use this to
+     * extend the component's lifetime past a future overwrite or Destroy().
+     *
+     * @param id the ID of the component
+     * @return shared_ptr, or nullptr if not found
+     */
+    template <typename T = class ComponentBase> std::shared_ptr<T> GetShared(const std::string& id) {
+        return this->components.getComponentShared<T>(id);
+    }
+
+    /**
      * Remove a component from the game's storage.
      *
      * @param id the ID of the component
