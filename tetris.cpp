@@ -231,7 +231,7 @@ bool isBoardInvalid(const tge::Vector2i& offset, const Piece& p, const tge::IntR
 // Start Menu (level select)
 class StartMenu : public tge::BorderedRectangle {
 public:
-    StartMenu() : tge::BorderedRectangle() {}
+    StartMenu(tge::KeyBuffer& enterKey) : tge::BorderedRectangle(), enterKey(enterKey) {}
 
     void Init() override {
         this->SetSize({26, 13});
@@ -272,13 +272,14 @@ public:
         if (Await(&leftkey) && (selected % 5) != 0) selected -= 1;
         if (Await(&rightkey) && (selected % 5) != 4) selected += 1;
 
-        if (tge::Keyboard::GetKeyDown(tge::Key::Enter)) {
+        if (Await(&enterKey)) {
             PushEvent(StartGameEvent(selected));
         }
     }
 
 private:
     int selected = 0;
+    tge::KeyBuffer& enterKey;
     tge::KeyBuffer upkey = tge::Key::Up;
     tge::KeyBuffer downkey = tge::Key::Down;
     tge::KeyBuffer leftkey = tge::Key::Left;
@@ -288,7 +289,7 @@ private:
 // Pause Menu
 class PauseMenu : public tge::BorderedRectangle {
 public:
-    PauseMenu() : tge::BorderedRectangle() {}
+    PauseMenu(tge::KeyBuffer& enterKey) : tge::BorderedRectangle(), enterKey(enterKey) {}
 
     void Init() override {
         this->SetSize({20, 8});
@@ -316,7 +317,7 @@ public:
         selected += Await(&downkey) - Await(&upkey);
         selected = tge::Math::Clamp(0, 1, selected);
 
-        if (tge::Keyboard::GetKeyDown(tge::Key::Enter)) {
+        if (Await(&enterKey)) {
             switch (selected) {
             case 0:
                 PushEvent(PauseToggledEvent{});
@@ -330,6 +331,7 @@ public:
 
 private:
     int selected = 0;
+    tge::KeyBuffer& enterKey;
     tge::KeyBuffer upkey = tge::Key::Up;
     tge::KeyBuffer downkey = tge::Key::Down;
 };
@@ -337,10 +339,11 @@ private:
 // Game Over Menu
 class GameOverMenu : public tge::BorderedRectangle {
 public:
-    GameOverMenu() : tge::BorderedRectangle() {}
+    GameOverMenu(const int& score, tge::KeyBuffer& enterKey)
+        : tge::BorderedRectangle(), scoreRef(score), enterKey(enterKey) {}
 
     void Init() override {
-        this->SetSize({20, 8});
+        this->SetSize({22, 10});
         this->SetCenter(tge::Terminal::Size() / 2);
         this->SetBorderFromStyle(tge::BorderedRectangle::Style::RoundedLine);
     }
@@ -350,14 +353,16 @@ public:
         auto cntr = this->GetCenter();
 
         std::wstring title = L" GAME OVER ";
-        std::wstring resumeTxt = L" resume ";
-        std::wstring quitTxt = L"  quit  ";
+        std::wstring scoreTxt = L"score: " + std::to_wstring(scoreRef);
+        std::wstring playTxt = L" play again ";
+        std::wstring quitTxt = L"    quit    ";
 
-        render.DrawStringAtXY(cntr + tge::Vector2i{-int(title.length()) / 2, -2}, title, tge::Color::White,
+        render.DrawStringAtXY(cntr + tge::Vector2i{-int(title.length()) / 2, -3}, title, tge::Color::White,
                               tge::Color::BrightBlack);
-        render.DrawStringAtXY(cntr + tge::Vector2i{-int(resumeTxt.length()) / 2, 0}, resumeTxt, tge::Color::White,
+        render.DrawStringAtXY(cntr + tge::Vector2i{-int(scoreTxt.length()) / 2, -1}, scoreTxt, tge::Color::White);
+        render.DrawStringAtXY(cntr + tge::Vector2i{-int(playTxt.length()) / 2, 1}, playTxt, tge::Color::White,
                               selected == 0 ? tge::Color::BrightBlack : tge::Color::None);
-        render.DrawStringAtXY(cntr + tge::Vector2i{-int(quitTxt.length()) / 2, 1}, quitTxt, tge::Color::White,
+        render.DrawStringAtXY(cntr + tge::Vector2i{-int(quitTxt.length()) / 2, 2}, quitTxt, tge::Color::White,
                               selected == 1 ? tge::Color::BrightBlack : tge::Color::None);
     }
 
@@ -365,7 +370,7 @@ public:
         selected += Await(&downkey) - Await(&upkey);
         selected = tge::Math::Clamp(0, 1, selected);
 
-        if (tge::Keyboard::GetKeyDown(tge::Key::Enter)) {
+        if (Await(&enterKey)) {
             switch (selected) {
             case 0:
                 PushEvent(RestartEvent{});
@@ -379,8 +384,47 @@ public:
 
 private:
     int selected = 0;
+    const int& scoreRef;
+    tge::KeyBuffer& enterKey;
     tge::KeyBuffer upkey = tge::Key::Up;
     tge::KeyBuffer downkey = tge::Key::Down;
+};
+
+// Next Piece Preview
+class NextPieceBox : public tge::BorderedRectangle {
+public:
+    NextPieceBox(tge::IntRect boardBounds) : tge::BorderedRectangle(), boardBounds(boardBounds) {}
+
+    void Init() override {
+        this->SetSize({12, 7});
+        this->SetPosition({boardBounds.x + boardBounds.width + 2, boardBounds.y + 2});
+        this->SetBorderFromStyle(tge::BorderedRectangle::Style::RoundedLine);
+    }
+
+    void Render() override {
+        tge::BorderedRectangle::Render();
+        auto bp = this->GetPosition();
+        auto cntr = this->GetCenter();
+
+        std::wstring lbl = L" NEXT ";
+        render.DrawStringAtXY(bp + tge::Vector2i{(12 - int(lbl.length())) / 2, 1}, lbl, tge::Color::White,
+                              tge::Color::BrightBlack);
+
+        for (const auto& cell : piece) {
+            render.DrawStringAtXY(cntr + cell * tge::Vector2i{2, 1} + tge::Vector2i{0, 1}, L"  ", tge::Color::None,
+                                  color);
+        }
+    }
+
+    void SetPiece(const Piece& p, tge::Color c) {
+        piece = p;
+        color = c;
+    }
+
+private:
+    tge::IntRect boardBounds;
+    Piece piece;
+    tge::Color color = tge::Color::None;
 };
 
 // Game Manager
@@ -398,9 +442,10 @@ public:
         auto board = Component<Board>("board")();
         board->SetCenter(bg->GetCenter());
 
-        Component<StartMenu>("start_menu")();
-        Component<PauseMenu>("pause_menu")();
-        Component<GameOverMenu>("game_over_menu")();
+        Component<StartMenu>("start_menu")(enterKey);
+        Component<PauseMenu>("pause_menu")(enterKey);
+        Component<GameOverMenu>("game_over_menu")(score, enterKey);
+        Component<NextPieceBox>("next_piece_box")(board->GetBounds());
 
         phase = GamePhase::Start;
     }
@@ -436,7 +481,7 @@ public:
         }
         case GamePhase::GameOver: {
             Get("game_over_menu")->Update();
-            if (!GetEvents<RestartEvent>().empty()) BeginGame(level);
+            if (!GetEvents<RestartEvent>().empty()) ResetToStart();
             break;
         }
         }
@@ -448,6 +493,13 @@ public:
 
         for (auto& i : pieces) i->Render();
         if (auto current = GetShared<Tetromino>("current")) current->Render();
+
+        if (phase != GamePhase::Start) {
+            auto bd = Get("board")->GetBounds();
+            std::wstring scoreTxt = L" SCORE: " + std::to_wstring(score) + L" ";
+            render.DrawStringAtXY({bd.x + bd.width + 2, bd.y}, scoreTxt, tge::Color::White, tge::Color::BrightBlack);
+            Get("next_piece_box")->Render();
+        }
 
         switch (phase) {
         case GamePhase::Start:
@@ -467,13 +519,26 @@ public:
 private:
     void BeginGame(int lvl) {
         level = lvl;
+        score = 0;
         if (GetShared<Tetromino>("current")) Destroy("current");
         pieces.clear();
         flashRows.clear();
         flashHide = false;
         flashTicks = 0;
+        std::tie(nextPiece, nextColor) = GetRandomPiece();
         phase = GamePhase::Playing;
         SpawnNext();
+    }
+
+    void ResetToStart() {
+        if (GetShared<Tetromino>("current")) Destroy("current");
+        pieces.clear();
+        flashRows.clear();
+        flashHide = false;
+        flashTicks = 0;
+        score = 0;
+        Get<NextPieceBox>("next_piece_box")->SetPiece({}, tge::Color::None);
+        phase = GamePhase::Start;
     }
 
     void UpdatePlaying() {
@@ -481,6 +546,8 @@ private:
             if (Await(&flashTimer)) {
                 flashHide = !flashHide;
                 if (--flashTicks == 0) {
+                    int linesCleared = (int)flashRows.size();
+                    score += level * linesCleared * linesCleared;
                     auto current = GetShared<Tetromino>("current");
                     if (current) current->ApplyLineClear(flashRows);
                     for (auto& t : pieces) t->ApplyLineClear(flashRows);
@@ -513,7 +580,11 @@ private:
             pieces.push_back(std::move(old));
             Destroy("current");
         }
-        auto [piece, color] = GetRandomPiece();
+        Piece piece = nextPiece;
+        tge::Color color = nextColor;
+        std::tie(nextPiece, nextColor) = GetRandomPiece();
+        Get<NextPieceBox>("next_piece_box")->SetPiece(nextPiece, nextColor);
+
         auto bd = Get("board")->GetBounds();
         tge::Vector2i spawn = {bd.x + bd.width / 2, bd.y};
         if (isBoardInvalid(spawn, piece, bd, pieces)) {
@@ -546,6 +617,10 @@ private:
 private:
     GamePhase phase = GamePhase::Start;
     int level = 0;
+    int score = 0;
+
+    Piece nextPiece;
+    tge::Color nextColor = tge::Color::None;
 
     std::vector<std::shared_ptr<Tetromino>> pieces;
 
@@ -555,6 +630,7 @@ private:
     tge::Timer<std::chrono::milliseconds> flashTimer = 80;
 
     tge::KeyBuffer pausekey = tge::Key::Escape;
+    tge::KeyBuffer enterKey = tge::Key::Enter;
 };
 
 int main() {
