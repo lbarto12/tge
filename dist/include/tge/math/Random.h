@@ -27,7 +27,7 @@ struct Random {
 
     template <typename T> static T Choice(const std::vector<T>& v) {
         std::uniform_int_distribution<> distr(0, v.size() - 1);
-        std::string choice = v[distr(gen)];
+        T choice = v[distr(gen)];
         return choice;
     }
 

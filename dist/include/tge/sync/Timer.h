@@ -14,6 +14,12 @@ template <typename TimeUnit> struct Timer : public async::Awaitable {
     Timer() : interval(TimeUnit{0}), last(Clock::now()) {}
     Timer(long long interval) : interval(TimeUnit{interval}), last(Clock::now()) {}
 
+    void SetInterval(long long interval) { this->interval = TimeUnit{interval}; }
+
+    const long long GetInterval() const { return this->interval.count(); }
+
+    void SetReadyNow() { this->last = Clock::now() - interval; }
+
     void Start() { this->last = Clock::now(); }
 
     void Reset() { this->last = Clock::now(); }

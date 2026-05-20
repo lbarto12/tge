@@ -20,9 +20,9 @@ public:
      * @return non-owning pointer to the created component
      */
     template <typename T = ComponentBase> T* addComponent(const std::string& id) {
-        auto ptr = std::make_unique<T>();
+        auto ptr = std::make_shared<T>();
         T* raw = ptr.get();
-        this->components[id] = std::move(ptr);
+        this->components[id] = ptr;
         return raw;
     }
 
@@ -34,15 +34,15 @@ public:
      * @return non-owning pointer to the added component
      */
     template <typename T = ComponentBase> T* addConstructedComponent(const std::string& id, T component) {
-        auto ptr = std::make_unique<T>(std::move(component));
+        auto ptr = std::make_shared<T>(std::move(component));
         T* raw = ptr.get();
-        this->components[id] = std::move(ptr);
+        this->components[id] = ptr;
         return raw;
     }
 
     template <typename T> T* addOwned(const std::string& id, std::unique_ptr<T> component) {
         T* raw = component.get();
-        this->components[id] = std::move(component);
+        this->components[id] = std::shared_ptr<T>(std::move(component));
         return raw;
     }
 
@@ -59,6 +59,19 @@ public:
     }
 
     /**
+     * Get a shared_ptr to a component by its ID. Use this to extend the
+     * component's lifetime past a future overwrite or removal.
+     *
+     * @param id the ID of the component
+     * @return shared_ptr, or nullptr if not found
+     */
+    template <typename T = ComponentBase> std::shared_ptr<T> getComponentShared(const std::string& id) {
+        auto it = this->components.find(id);
+        if (it == this->components.end()) return nullptr;
+        return std::static_pointer_cast<T>(it->second);
+    }
+
+    /**
      * Remove a component by its ID.
      *
      * @param id the ID of the component
@@ -68,6 +81,6 @@ public:
     ~ComponentManager() = default;
 
 private:
-    std::unordered_map<std::string, std::unique_ptr<ComponentBase>> components;
+    std::unordered_map<std::string, std::shared_ptr<ComponentBase>> components;
 };
 } // namespace tge
