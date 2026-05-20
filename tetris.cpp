@@ -3,6 +3,7 @@
 #include "tge/input.h"
 #include <algorithm>
 #include <chrono>
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -77,8 +78,10 @@ bool isBoardInvalid(const tge::Vector2i& offset, const Piece& p, const tge::IntR
 class Tetromino : public tge::ComponentBase {
 public:
     Tetromino(Piece p, tge::Color c, tge::IntRect boardBounds,
-              const std::vector<std::shared_ptr<Tetromino>>& others)
-        : tge::ComponentBase(), p(p), boardBounds(boardBounds), others(others) {
+              const std::vector<std::shared_ptr<Tetromino>>& others,
+              const std::vector<int>& flashRows, const bool& flashHide)
+        : tge::ComponentBase(), p(p), boardBounds(boardBounds), others(others),
+          flashRows(flashRows), flashHide(flashHide) {
         this->SetBackgroundColor(c);
     }
 
@@ -138,8 +141,11 @@ public:
                       std::to_wstring(boardBounds.width) + L" " + std::to_wstring(boardBounds.height);
         render.DrawStringAtXY({0, 1}, bounds);
 
+        auto pos2 = this->GetPosition();
         for (const auto& i : p) {
-            render.DrawStringAtXY(this->GetPosition() + i * tge::Vector2i{2, 1}, L"  ", tge::Color::None,
+            int absY = pos2.y + i.y;
+            if (flashHide && std::find(flashRows.begin(), flashRows.end(), absY) != flashRows.end()) continue;
+            render.DrawStringAtXY(pos2 + i * tge::Vector2i{2, 1}, L"  ", tge::Color::None,
                                   this->GetBackgroundColor());
         }
     }
@@ -147,6 +153,20 @@ public:
     bool IsSet() { return set; }
 
     const Piece& GetPiece() const { return p; }
+
+    void ApplyLineClear(const std::vector<int>& cleared) {
+        Piece next;
+        auto pos = this->GetPosition();
+        for (const auto& cell : p) {
+            int absY = pos.y + cell.y;
+            if (std::find(cleared.begin(), cleared.end(), absY) != cleared.end()) continue;
+            int shift = 0;
+            for (int r : cleared)
+                if (r > absY) shift++;
+            next.push_back({cell.x, cell.y + shift});
+        }
+        p = std::move(next);
+    }
 
 private:
     bool set = false;
@@ -156,6 +176,8 @@ private:
 
     tge::IntRect boardBounds;
     const std::vector<std::shared_ptr<Tetromino>>& others;
+    const std::vector<int>& flashRows;
+    const bool& flashHide;
 
     // Movement
     tge::Timer<std::chrono::milliseconds> moveDelay = 50;
@@ -207,10 +229,33 @@ public:
         if (Await(&quitkey)) events.Push(GameQuitEvent{});
         if (!events.Get<GameQuitEvent>().empty()) Quit();
 
+        if (flashTicks > 0) {
+            if (Await(&flashTimer)) {
+                flashHide = !flashHide;
+                if (--flashTicks == 0) {
+                    auto current = GetShared<Tetromino>("current");
+                    if (current) current->ApplyLineClear(flashRows);
+                    for (auto& t : pieces) t->ApplyLineClear(flashRows);
+                    flashRows.clear();
+                    flashHide = false;
+                    Next();
+                }
+            }
+            return;
+        }
+
         auto current = Get<Tetromino>("current");
         current->Update();
         if (current->IsSet()) {
-            Next();
+            auto full = DetectFullRows();
+            if (full.empty()) {
+                Next();
+            } else {
+                flashRows = std::move(full);
+                flashHide = false;
+                flashTicks = 6;
+                flashTimer.SetReadyNow();
+            }
         }
     }
 
@@ -229,6 +274,11 @@ private:
 
     std::vector<std::shared_ptr<Tetromino>> pieces;
 
+    std::vector<int> flashRows;
+    bool flashHide = false;
+    int flashTicks = 0;
+    tge::Timer<std::chrono::milliseconds> flashTimer = 80;
+
     tge::KeyBuffer quitkey = tge::Key::Q;
 
 private:
@@ -237,7 +287,27 @@ private:
             pieces.push_back(std::move(old));
         }
         auto [p, c] = GetRandomPiece();
-        return Component<Tetromino>("current")(p, c, Get("board")->GetBounds(), pieces);
+        return Component<Tetromino>("current")(p, c, Get("board")->GetBounds(), pieces, flashRows, flashHide);
+    }
+
+    std::vector<int> DetectFullRows() {
+        auto bd = Get("board")->GetBounds();
+        int required = bd.width / 2;
+        std::map<int, int> count;
+        auto add = [&](const std::shared_ptr<Tetromino>& t) {
+            if (!t) return;
+            auto pos = t->GetPosition();
+            for (const auto& cell : t->GetPiece()) {
+                int absY = pos.y + cell.y;
+                if (absY >= bd.y && absY < bd.y + bd.height) count[absY]++;
+            }
+        };
+        add(GetShared<Tetromino>("current"));
+        for (const auto& t : pieces) add(t);
+        std::vector<int> full;
+        for (const auto& [y, c] : count)
+            if (c >= required) full.push_back(y);
+        return full;
     }
 };
 
