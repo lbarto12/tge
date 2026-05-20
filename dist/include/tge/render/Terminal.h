@@ -7,7 +7,7 @@
 #include "Color.h"
 #include "Platform.h"
 
-namespace tge::render {
+namespace tge {
 
 class Terminal {
 public:
@@ -44,6 +44,8 @@ public:
     static bool EnableRawMode() { return platform::enableRawMode(); }
     static void DisableRawMode() { platform::disableRawMode(); }
 
+    static bool IsFocused() { return platform::isTerminalFocused(); }
+
     static void UnMount() {
         Clear();
         ResetStyle();
@@ -54,4 +56,4 @@ public:
     static void Flush() { std::fflush(stdout); }
 };
 
-} // namespace tge::render
+} // namespace tge

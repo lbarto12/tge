@@ -91,6 +91,25 @@ public:
      */
     Vector2i Move(const Vector2i& delta) { return this->position = this->position + delta; }
 
+    /**
+     * Get the component's center.
+     *
+     * @return the component's center
+     */
+    Vector2i GetCenter() { return this->size / 2 + this->position; }
+
+    /**
+     * Set the component's position by moving it's center to the specified location
+     *
+     * @param center where to put the center of the component
+     * @return the component's new literal position (top left)
+     */
+    Vector2i SetCenter(const Vector2i& center) {
+        auto sz = this->GetSize();
+
+        return this->position = center - (sz / 2);
+    }
+
 protected:
     Vector2i size = {0, 0}, position = {0, 0};
 };

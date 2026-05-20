@@ -16,7 +16,7 @@
 #include <unistd.h>
 #endif
 
-namespace tge::render {
+namespace tge {
 
 struct TerminalSize {
     int cols;
@@ -83,6 +83,12 @@ inline void disableRawMode() {
     s.saved = false;
 }
 
+inline bool isTerminalFocused() {
+    HWND console = GetConsoleWindow();
+    HWND fg = GetForegroundWindow();
+    return console == fg;
+}
+
 #else // POSIX
 
 struct ModeState {
@@ -126,7 +132,9 @@ inline void disableRawMode() {
     s.saved = false;
 }
 
+bool isTerminalFocused();
+
 #endif
 
 } // namespace platform
-} // namespace tge::render
+} // namespace tge

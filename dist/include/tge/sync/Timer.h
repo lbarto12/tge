@@ -4,8 +4,10 @@
 #include <chrono>
 #include <ratio>
 
-namespace tge::sync {
-template <typename TimeUnit> struct Timer {
+#include "Awaitable.h"
+
+namespace tge {
+template <typename TimeUnit> struct Timer : public async::Awaitable {
     using Clock = std::chrono::high_resolution_clock;
     using TimePoint = Clock::time_point;
 
@@ -18,7 +20,7 @@ template <typename TimeUnit> struct Timer {
 
     bool Ready() { return std::chrono::duration_cast<TimeUnit>(Clock::now() - last) >= interval; }
 
-    bool Await() {
+    bool Await() override {
         if (Ready()) {
             Reset();
             return true;
@@ -30,4 +32,4 @@ private:
     TimeUnit interval;
     TimePoint last;
 };
-} // namespace tge::sync
+} // namespace tge

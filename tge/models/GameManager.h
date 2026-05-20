@@ -1,6 +1,7 @@
 #pragma once
 // IWYU pragma: private, include <tge/game.h>
 
+#include "../event/Event.h"
 #include "../input/Keyboard.h"
 #include "../render/ScreenBuffer.h"
 #include "../render/Terminal.h"
@@ -9,11 +10,14 @@
 
 #include <chrono>
 #include <cstdlib>
+#include <ctime>
 #include <functional>
 #include <thread>
 
 const long long DEFAULT_RENDER_FPS = 60; // fps
 const long long DEFAULT_TICK_SPEED = 60; // tps
+
+using namespace tge::async;
 
 namespace tge {
 class GameManager {
@@ -22,6 +26,7 @@ public:
         this->SetFPS(DEFAULT_RENDER_FPS);
         this->SetTicksPerSecond(DEFAULT_TICK_SPEED);
         std::setlocale(LC_ALL, "");
+        std::srand(time(NULL));
     }
 
     virtual void Start() {}
@@ -29,7 +34,10 @@ public:
     virtual void Update() {}
 
 private: // Internal loops and inits
-    void internal_update() { this->Update(); }
+    void internal_update() {
+        this->Update();
+        this->events.StageNextTickEvents();
+    }
 
     void internal_render() {
         this->Render();
@@ -43,32 +51,32 @@ public:
      * @return graceful exit
      */
     bool Run() {
-        render::Terminal::Init();
+        Terminal::Init();
 
         // Safety net for abnormal exits - raw mode would otherwise leak into the user's shell.
         std::atexit([] {
-            render::Terminal::DisableRawMode();
+            Terminal::DisableRawMode();
             tge::Keyboard::Shutdown();
         });
 
         if (!tge::Keyboard::Init()) {
-            render::Terminal::UnMount();
+            Terminal::UnMount();
             return false;
         }
 
         this->Start();
         while (this->running) {
-            if (this->tickSpeed.Await()) {
+            if (Await(&tickSpeed)) {
                 this->internal_update();
             }
-            if (this->renderFps.Await()) {
+            if (Await(&renderFps)) {
                 this->internal_render();
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(1)); // no runaway cpu shit
         }
 
         tge::Keyboard::Shutdown();
-        render::Terminal::UnMount();
+        Terminal::UnMount();
         return true;
     }
 
@@ -83,9 +91,7 @@ protected:
      *
      * @param fps frames to render per second
      */
-    void SetFPS(long long fps) {
-        this->renderFps = sync::Timer<std::chrono::milliseconds>{calcTimerDurationFromFPS(fps)};
-    }
+    void SetFPS(long long fps) { this->renderFps = Timer<std::chrono::milliseconds>{calcTimerDurationFromFPS(fps)}; }
 
     /**
      * Set the game's TPS. TPS is used only for logic updates.
@@ -93,7 +99,7 @@ protected:
      * @param tps game logic ticks per second
      */
     void SetTicksPerSecond(long long tps) {
-        this->tickSpeed = sync::Timer<std::chrono::milliseconds>{calcTimerDurationFromFPS(tps)};
+        this->tickSpeed = Timer<std::chrono::milliseconds>{calcTimerDurationFromFPS(tps)};
     }
 
 private:
@@ -101,6 +107,12 @@ private:
 
 protected:
     tge::render::ScreenBuffer& render = tge::render::ScreenBuffer::globalScreenBuffer;
+    tge::EventManager& events = tge::EventManager::globalEventManager;
+
+protected:
+    template <typename EventType = Event> std::vector<EventType*> GetEvents() { return events.Get<EventType>(); }
+
+    template <typename EventType = Event> void PushEvent(EventType event) { this->events.Push(std::move(event)); }
 
 protected:
     /**
@@ -108,36 +120,15 @@ protected:
      * Add component to component manager.
      *
      * @param id the ID for the created component
-     * @return the created component
+     * @return A function to construct the component
      */
-    template <typename T = class ComponentBase> T* Component(const std::string& id) {
-        T* component = this->components.addComponent<T>(id);
-        component->Init();
-        return component;
-    }
-
-    /**
-     * Construct a component from an initilization function.
-     *
-     * This function returns a function that accepts a lambda.
-     * This lambda must return some derivative of `ComponentBase`
-     *
-     * Example usage
-     * ```
-     * Construct("my_id")([someArg, ...](){
-     *  return new CustomComponent(someArg, ...);
-     * });
-     *```
-     *
-     * @param id the ID of the new component
-     */
-    template <typename T = class ComponentBase>
-    std::function<T*(std::function<T*()>)> Construct(const std::string& id) {
-        return [this, id](std::function<T*()> creator) -> T* {
-            T* component = creator();
-            component->Init();
-            this->components.addConstructedComponent(id, component);
-            return components.getComponent<T>(id);
+    template <typename T> [[nodiscard]] auto Component(const std::string& id) {
+        return [this, id](auto&&... args) -> T* {
+            auto ptr = std::make_unique<T>(std::forward<decltype(args)>(args)...);
+            ptr->Init();
+            T* raw = ptr.get();
+            this->components.addOwned(id, std::move(ptr));
+            return raw;
         };
     }
 
@@ -151,10 +142,28 @@ protected:
         return this->components.getComponent<T>(id);
     }
 
+    /**
+     * Get a shared_ptr to a component from the game's storage. Use this to
+     * extend the component's lifetime past a future overwrite or Destroy().
+     *
+     * @param id the ID of the component
+     * @return shared_ptr, or nullptr if not found
+     */
+    template <typename T = class ComponentBase> std::shared_ptr<T> GetShared(const std::string& id) {
+        return this->components.getComponentShared<T>(id);
+    }
+
+    /**
+     * Remove a component from the game's storage.
+     *
+     * @param id the ID of the component
+     */
+    void Destroy(const std::string& id) { this->components.removeComponent(id); }
+
 private:
     bool running = true;
-    sync::Timer<std::chrono::milliseconds> renderFps;
-    sync::Timer<std::chrono::milliseconds> tickSpeed;
+    Timer<std::chrono::milliseconds> renderFps;
+    Timer<std::chrono::milliseconds> tickSpeed;
 
 private:
     long long calcTimerDurationFromFPS(long long perSecond) { return 1000 / perSecond; }
