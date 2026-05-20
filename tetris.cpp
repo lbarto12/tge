@@ -57,18 +57,6 @@ int pmaxy(const tge::Vector2i& offset, const Piece& p) {
     return res;
 }
 
-bool CannotMoveLeft(const tge::Vector2i& offset, const Piece& p, const tge::IntRect& board) {
-    return pminx(offset, p) <= board.x + 1;
-};
-
-bool CannotMoveRight(const tge::Vector2i& offset, const Piece& p, const tge::IntRect& board) {
-    return pmaxx(offset, p) >= board.x + board.width - 3;
-}
-
-bool CannotMoveDown(const tge::Vector2i& offset, const Piece& p, const tge::IntRect& board) {
-    return pmaxy(offset, p) >= board.y + board.height - 1;
-}
-
 // Board Component
 class Board : public tge::Rectangle {
 public:
@@ -81,10 +69,16 @@ public:
     void Render() override { tge::Rectangle::Render(); }
 };
 
+class Tetromino;
+bool isBoardInvalid(const tge::Vector2i& offset, const Piece& p, const tge::IntRect& board,
+                    const std::vector<std::shared_ptr<Tetromino>>& others);
+
 // Tetromino Component
 class Tetromino : public tge::ComponentBase {
 public:
-    Tetromino(Piece p, tge::Color c, tge::IntRect boardBounds) : tge::ComponentBase(), p(p), boardBounds(boardBounds) {
+    Tetromino(Piece p, tge::Color c, tge::IntRect boardBounds,
+              const std::vector<std::shared_ptr<Tetromino>>& others)
+        : tge::ComponentBase(), p(p), boardBounds(boardBounds), others(others) {
         this->SetBackgroundColor(c);
     }
 
@@ -96,7 +90,7 @@ public:
     }
 
     void Update() override {
-        if (set || CannotMoveDown(this->GetPosition(), p, boardBounds)) {
+        if (set || isBoardInvalid(this->GetPosition() + tge::Vector2i{0, 1}, p, boardBounds, others)) {
             this->set = true;
             return;
         }
@@ -125,8 +119,7 @@ public:
             this->arrowDelay.SetReadyNow();
             this->arrowDelay.SetInterval(0); // reset momentum
         } else if (Await(&arrowDelay)) {
-            if ((manual == tge::Vector2i{-2, 0} && !CannotMoveLeft(this->GetPosition(), p, boardBounds)) ||
-                (manual == tge::Vector2i{2, 0} && !CannotMoveRight(this->GetPosition(), p, boardBounds))) {
+            if (!isBoardInvalid(this->GetPosition() + manual, p, boardBounds, others)) {
                 this->Move(manual);
                 if (this->arrowDelay.GetInterval() == 0) {
                     this->arrowDelay.SetInterval(100);
@@ -153,6 +146,8 @@ public:
 
     bool IsSet() { return set; }
 
+    const Piece& GetPiece() const { return p; }
+
 private:
     bool set = false;
 
@@ -160,6 +155,7 @@ private:
     tge::Vector2i boardPos, vel, manual;
 
     tge::IntRect boardBounds;
+    const std::vector<std::shared_ptr<Tetromino>>& others;
 
     // Movement
     tge::Timer<std::chrono::milliseconds> moveDelay = 50;
@@ -169,6 +165,27 @@ private:
     tge::KeyBuffer rotateLeftKey = tge::Key::Z;
     tge::KeyBuffer rotateRightKey = tge::Key::X;
 };
+
+bool isBoardInvalid(const tge::Vector2i& offset, const Piece& p, const tge::IntRect& board,
+                    const std::vector<std::shared_ptr<Tetromino>>& others) {
+    // Out of bounds
+    if (pminx(offset, p) < board.x) return true;
+    if (pmaxx(offset, p) > board.x + board.width - 2) return true;
+    if (pmaxy(offset, p) > board.y + board.height - 1) return true;
+
+    // Overlap with any already-set piece, in screen space
+    for (const auto& cell : p) {
+        auto pos = offset + cell * tge::Vector2i{2, 1};
+        for (const auto& other : others) {
+            if (!other) continue;
+            auto otherOffset = other->GetPosition();
+            for (const auto& otherCell : other->GetPiece()) {
+                if (pos == otherOffset + otherCell * tge::Vector2i{2, 1}) return true;
+            }
+        }
+    }
+    return false;
+}
 
 // Game Manager
 class Tetris : public tge::GameManager {
@@ -220,7 +237,7 @@ private:
             pieces.push_back(std::move(old));
         }
         auto [p, c] = GetRandomPiece();
-        return Component<Tetromino>("current")(p, c, Get("board")->GetBounds());
+        return Component<Tetromino>("current")(p, c, Get("board")->GetBounds(), pieces);
     }
 };
 
