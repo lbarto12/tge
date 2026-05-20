@@ -74,7 +74,7 @@ class Board : public tge::Rectangle {
 public:
     Board() : tge::Rectangle() {}
 
-    void Init() override { this->SetSize({20 * 2, 40}); }
+    void Init() override { this->SetSize({20, 20}); }
 
     void Update() override {}
 
@@ -89,7 +89,7 @@ public:
     }
 
     void Init() override {
-        boardPos = (tge::Terminal::Size() / 2 - tge::Vector2i{40, 40} / 2) + tge::Vector2i{20, 0};
+        boardPos = (tge::Terminal::Size() / 2 - tge::Vector2i{20, 20} / 2) + tge::Vector2i{10, 0};
         this->SetPosition(boardPos);
         vel = {0, 1};
         manual = {0, 0};
