@@ -41,14 +41,14 @@ void RotateLeft(Piece& p) {
 }
 
 int pminx(const tge::Vector2i& offset, const Piece& p) {
-    int res = (offset + p[0]).x;
-    for (const auto& i : p) res = std::min(res, (offset + i).x);
+    int res = offset.x + p[0].x * 2;
+    for (const auto& i : p) res = std::min(res, offset.x + i.x * 2);
     return res;
 }
 
 int pmaxx(const tge::Vector2i& offset, const Piece& p) {
-    int res = (offset + p[0]).x;
-    for (const auto& i : p) res = std::max(res, (offset + i).x);
+    int res = offset.x + p[0].x * 2;
+    for (const auto& i : p) res = std::max(res, offset.x + i.x * 2);
     return res;
 }
 
@@ -107,10 +107,15 @@ public:
             manual.x = 0;
 
         // Handle rot
-        if (Await(&rotateLeftKey))
-            RotateLeft(p);
-        else if (Await(&rotateRightKey))
-            RotateRight(p);
+        if (Await(&rotateLeftKey)) {
+            Piece rotated = p;
+            RotateLeft(rotated);
+            if (!isBoardInvalid(this->GetPosition(), rotated, boardBounds, others)) p = std::move(rotated);
+        } else if (Await(&rotateRightKey)) {
+            Piece rotated = p;
+            RotateRight(rotated);
+            if (!isBoardInvalid(this->GetPosition(), rotated, boardBounds, others)) p = std::move(rotated);
+        }
 
         // Handle downwards motion
         if (Await(&moveDelay)) {
