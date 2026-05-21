@@ -26,17 +26,17 @@ Still need to write docs, but it will be cool :)
 To get a game up and running, you need to initialize the game manager, and begin its execution loop:
 
 ```cpp
+
 class MyGame : public tge::GameManager {
 public:
     MyGame() : tge::GameManager() {}
-    void Start override {}
-    void Update override {
+    void Update() override {
         if (tge::Keyboard::GetKeyDown(tge::Key::Q)) {
             Quit();
         }
     }
-    void Render() override {}
 };
+
 int main() {
     auto game = MyGame();
     game.Run();
@@ -47,6 +47,33 @@ This driver code will launch the app with an empty screen, and can be quit using
 
 </details>
 </blockquote>
+
+<blockquote>
+<details>
+<summary>Hello World</summary>
+
+This engine uses a custom rendering system, read about it in the `How it Works` section.
+
+Here's an example of rendering Hello world at the top left of the screen:
+
+```cpp
+class MyGame : public tge::GameManager {
+public:
+    MyGame() : tge::GameManager() {}
+
+    void Update() override {
+        if (tge::Keyboard::GetKeyDown(tge::Key::Q)) {
+            Quit();
+        }
+    }
+
+    void Render() override { render.DrawStringAtXY({0, 0}, L"hello world!", tge::Color::Blue); }
+};
+```
+
+</details>
+</blockquote>
+
 
 </details>
 
