@@ -94,6 +94,9 @@ frame without disturbing the current one - then swaps the buffers, like in tradi
 The primary difference is that the buffer-swap *only* redraws characters that have changed since the last frame,
 significantly reducing the required number of cursor movements and character prints.
 
+This doesn't mitigate the cost of subsequent, unique frames being completely redrawn - but massively improves the
+performance of procedural events and micro-movement animations.
+
 </details>
 </blockquote>
 
