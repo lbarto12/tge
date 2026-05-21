@@ -54,7 +54,7 @@ This driver code will launch the app with an empty screen, and can be quit using
 
 This engine uses a custom rendering system, read about it in the `How it Works` section.
 
-Here's an example of rendering Hello world at the top left of the screen:
+Here's an example of rendering Hello world at the top left of the screen, and in the middle of the screen:
 
 ```cpp
 class MyGame : public tge::GameManager {
@@ -67,7 +67,10 @@ public:
         }
     }
 
-    void Render() override { render.DrawStringAtXY({0, 0}, L"hello world!", tge::Color::Blue); }
+    void Render() override {
+        render.DrawStringAtXY({0, 0}, L"hello world!");
+        render.DrawStringAtXY(tge::Terminal::Size() / 2 - tge::Vector2i{6, 0}, L"hello world!");
+    }
 };
 ```
 
