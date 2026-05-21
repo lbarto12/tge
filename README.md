@@ -16,8 +16,9 @@ This is a complete set of multi-platform terminal rendering, input, event, and l
 ## How to use it.
 Still need to write docs, but it will be cool :)
 
+## How it works.
 <details>
-    <summary>How it works.</summary>
+    <summary>Rendering</summary>
     The secret sauce is in how the characters are rendered to the screen. The program uses a custom class for
     drawing to the terminal. This class emulates a console buffer per-character, and allows you to write to the *next*
     frame without disturbing the current one - then swaps the buffers, like in traditional computer graphics :)
