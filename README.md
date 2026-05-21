@@ -1,9 +1,13 @@
 # TGE - Terminal Game Engine
 
 ## Examples
-![tetris](./md-imgs/tetris.gif)
-![cube](./md-imgs/cube.gif)
-![snake](./md-imgs/snake.gif)
+<table>
+  <tr>
+    <td width="33%" align="center"><img src="./md-imgs/tetris.gif" width="100%" /><br><em>Tetris</em></td>
+    <td width="33%" align="center"><img src="./md-imgs/cube.gif" width="100%" /><br><em>Cube</em></td>
+    <td width="33%" align="center"><img src="./md-imgs/snake.gif" width="100%" /><br><em>Snake</em></td>
+  </tr>
+</table>
 
 ## What is this?
 This is a complete set of multi-platform terminal rendering, input, event, and life-cycle management tools.
