@@ -18,6 +18,7 @@ Still need to write docs, but it will be cool :)
 
 <details>
     <summary>Getting Started</summary>
+    <blockquote>
     <details>
         <summary>Simple Program</summary>
 
@@ -48,6 +49,7 @@ Still need to write docs, but it will be cool :)
         This driver code will launch the app with an empty screen, and can be quit using the `Q` key.
 
     </details>
+    </blockquote>
 </details>
 
 
