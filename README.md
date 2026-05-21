@@ -16,6 +16,42 @@ This is a complete set of multi-platform terminal rendering, input, event, and l
 ## How to use it.
 Still need to write docs, but it will be cool :)
 
+<details>
+    <summary>Getting Started</summary>
+    <details>
+        <summary>Simple Program</summary>
+
+        To get a game up and running, you need to initialize the game manager, and begin it's execution loop:
+
+        ```cpp
+        class MyGame : public tge::GameManager {
+        public:
+            MyGame() : tge::GameManager() {}
+
+            void Start override {}
+
+            void Update override {
+                if (tge::Keyboard::GetKeyDown(tge::Key::Q)) {
+                    Quit();
+                }
+            }
+
+            void Render() override {}
+        };
+
+        int main() {
+            auto game = MyGame();
+            game.Run();
+        }
+        ```
+
+        This driver code will launch the app with an empty screen, and can be quit using the `Q` key.
+
+    </details>
+</details>
+
+
+
 ## How it works.
 <details>
     <summary>Rendering</summary>
