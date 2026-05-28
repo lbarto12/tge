@@ -8,6 +8,8 @@ public:
         this->SetSize({20, 10});
         this->SetBorderFromStyle(tge::BorderedRectangle::Style::RoundedLine);
         this->SetBorderForegroundColor(tge::Color::Blue);
+        this->SetForegroundColor(tge::Color::Blue);
+        this->SetFill(L'/');
     }
 
     void Render() override { tge::BorderedRectangle::Render(); }
@@ -18,6 +20,9 @@ public:
     ComponentB() : tge::BorderedRectangle() {
         this->SetSize({20, 10});
         this->SetCenter({20, 10});
+        this->SetForegroundColor(tge::Color::Red);
+        this->SetFill(L'/');
+
         this->SetBorderFromStyle(tge::BorderedRectangle::Style::RoundedLine);
         this->SetBorderForegroundColor(tge::Color::Red);
     }
@@ -25,6 +30,8 @@ public:
     void Init() override {
         auto inner = Component<tge::BorderedRectangle>("inner")();
         inner->SetSize({10, 6});
+        inner->SetForegroundColor(tge::Color::Green);
+        inner->SetFill(L'/');
         inner->SetBorderForegroundColor(tge::Color::Green);
         inner->SetBorderFromStyle(tge::BorderedRectangle::Style::RoundedLine);
         inner->SetCenter(this->GetCenter());
