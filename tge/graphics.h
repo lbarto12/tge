@@ -6,6 +6,7 @@
 
 // Components
 #include "models/component/Component.h"
+#include "models/component/Component.hpp"
 #include "models/component/Drawable.h"
 #include "models/component/Transformable.h"
 

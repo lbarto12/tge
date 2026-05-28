@@ -8,6 +8,7 @@
 #include "../sync/Timer.h"
 #include "ComponentManager.h"
 
+#include <cassert>
 #include <chrono>
 #include <cstdlib>
 #include <ctime>
@@ -124,10 +125,11 @@ protected:
      * @return A function to construct the component
      */
     template <typename T> [[nodiscard]] auto Component(const std::string& id) {
+        assert(this->components && "ComponentManager not defined");
         return [this, id](auto&&... args) -> T* {
             auto ptr = std::make_unique<T>(std::forward<decltype(args)>(args)...);
-            ptr->Init();
             ptr->__setComponentManager(this->components);
+            ptr->Init();
             T* raw = ptr.get();
             this->components->addOwned(id, std::move(ptr));
             return raw;

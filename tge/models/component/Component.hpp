@@ -1,14 +1,16 @@
 
-#include "Component.h"
 #include "../ComponentManager.h"
+#include "Component.h"
+#include <cassert>
 
 // Needed this to be able to include component manager functions in circular dep loop
 namespace tge {
 template <typename T> [[nodiscard]] auto ComponentBase::Component(const std::string& id) {
+    assert(this->components && "ComponentManager not defined");
     return [this, id](auto&&... args) -> T* {
         auto ptr = std::make_unique<T>(std::forward<decltype(args)>(args)...);
-        ptr->Init();
         ptr->__setComponentManager(this->components);
+        ptr->Init();
         T* raw = ptr.get();
         this->components->addOwned(id, std::move(ptr));
         return raw;
