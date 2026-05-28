@@ -8,6 +8,7 @@
 #include "../sync/Timer.h"
 #include "ComponentManager.h"
 
+#include <cassert>
 #include <chrono>
 #include <cstdlib>
 #include <ctime>
@@ -25,6 +26,7 @@ public:
     GameManager() {
         this->SetFPS(DEFAULT_RENDER_FPS);
         this->SetTicksPerSecond(DEFAULT_TICK_SPEED);
+        this->components = &ComponentManager::globalComponentManager;
         std::setlocale(LC_ALL, "");
         std::srand(time(NULL));
     }
@@ -103,7 +105,7 @@ protected:
     }
 
 private:
-    tge::ComponentManager components;
+    tge::ComponentManager* components;
 
 protected:
     tge::render::ScreenBuffer& render = tge::render::ScreenBuffer::globalScreenBuffer;
@@ -123,11 +125,13 @@ protected:
      * @return A function to construct the component
      */
     template <typename T> [[nodiscard]] auto Component(const std::string& id) {
+        assert(this->components && "ComponentManager not defined");
         return [this, id](auto&&... args) -> T* {
             auto ptr = std::make_unique<T>(std::forward<decltype(args)>(args)...);
+            ptr->__setComponentManager(this->components);
             ptr->Init();
             T* raw = ptr.get();
-            this->components.addOwned(id, std::move(ptr));
+            this->components->addOwned(id, std::move(ptr));
             return raw;
         };
     }
@@ -139,7 +143,7 @@ protected:
      * @return the component.
      */
     template <typename T = class ComponentBase> T* Get(const std::string& id) {
-        return this->components.getComponent<T>(id);
+        return this->components->getComponent<T>(id);
     }
 
     /**
@@ -150,7 +154,7 @@ protected:
      * @return shared_ptr, or nullptr if not found
      */
     template <typename T = class ComponentBase> std::shared_ptr<T> GetShared(const std::string& id) {
-        return this->components.getComponentShared<T>(id);
+        return this->components->getComponentShared<T>(id);
     }
 
     /**
@@ -158,7 +162,7 @@ protected:
      *
      * @param id the ID of the component
      */
-    void Destroy(const std::string& id) { this->components.removeComponent(id); }
+    void Destroy(const std::string& id) { this->components->removeComponent(id); }
 
 private:
     bool running = true;
