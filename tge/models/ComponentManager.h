@@ -1,5 +1,6 @@
 #pragma once
 // IWYU pragma: private, include <tge/graphics.h>
+
 #include "component/Component.h"
 #include <memory>
 #include <unordered_map>
@@ -82,5 +83,11 @@ public:
 
 private:
     std::unordered_map<std::string, std::shared_ptr<ComponentBase>> components;
+
+public:
+    static ComponentManager globalComponentManager;
 };
+
+ComponentManager ComponentManager::globalComponentManager;
+
 } // namespace tge
