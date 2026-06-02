@@ -1,0 +1,175 @@
+#include "tge/game.h"
+#include "tge/graphics.h"
+#include "tge/input.h"
+#include <algorithm>
+#include <chrono>
+#include <cstdlib>
+#include <string>
+#include <vector>
+
+// define that this program will use awaits.
+using namespace tge::async;
+
+// Game state view model
+struct GameState {
+    bool paused = false;
+};
+
+struct GameExitEvent : public tge::Event {};
+struct PauseToggledEvent : public tge::Event {};
+
+class Snake : public tge::ComponentBase {
+public:
+    void Init() override {
+        auto start = tge::Terminal::Size() / 4 * 2 + 1;
+        segments.push_back(start);
+        segments.push_back(start - tge::Vector2i{0, 1});
+        segments.push_back(start - tge::Vector2i{0, 2});
+        segments.push_back(start - tge::Vector2i{0, 3});
+
+        vel = {0, 1};
+        randomizeFruit();
+    }
+
+    void Update() override {
+        if (tge::Keyboard::GetKeyDown(tge::Key::Up) && vel != tge::Vector2i{0, 1}) vel = {0, -1};
+        if (tge::Keyboard::GetKeyDown(tge::Key::Right) && vel != tge::Vector2i{-2, 0}) vel = {2, 0};
+        if (tge::Keyboard::GetKeyDown(tge::Key::Left) && vel != tge::Vector2i{2, 0}) vel = {-2, 0};
+        if (tge::Keyboard::GetKeyDown(tge::Key::Down) && vel != tge::Vector2i{0, -1}) vel = {0, 1};
+
+        if (!Await(&moveDelay)) return;
+
+        auto newHead = tge::Math::Wrap({0, 0}, tge::Terminal::Size() / 2 * 2, segments[0] + vel);
+        segments.insert(segments.begin(), newHead);
+        segments.pop_back();
+
+        if (newHead == fruit) {
+            score += 1;
+            randomizeFruit();
+            segments.push_back(segments.back());
+        }
+    }
+
+    void Render() override {
+        render.DrawStringAtXY(fruit, L"██", tge::Color::Red);
+        for (const auto& segment : segments) {
+            render.DrawStringAtXY(segment, L"██", tge::Color::Blue);
+        }
+
+        render.DrawStringAtXY({0, 0}, L"length: " + std::to_wstring(segments.size()));
+        render.DrawStringAtXY({0, 1}, L"score: " + std::to_wstring(score));
+    }
+
+private:
+    tge::Vector2i vel, fruit;
+    std::vector<tge::Vector2i> segments;
+    int score = 0;
+    tge::Timer<std::chrono::milliseconds> moveDelay = 50;
+
+private:
+    void randomizeFruit() {
+        auto ts = tge::Terminal::Size();
+        fruit = tge::Random::Vector2(2, ts.x - 1, 2, ts.y - 1) / 2 * 2 - 1;
+    }
+};
+
+class PauseMenu : public tge::BorderedRectangle {
+public:
+    PauseMenu() : tge::BorderedRectangle() {}
+
+    void Init() override {
+        auto sz = tge::Terminal::Size() / 2;
+
+        this->SetSize(sz);
+        this->SetCenter(sz);
+        this->SetBorderFromStyle(tge::BorderedRectangle::Style::RoundedLine);
+    }
+
+    void Render() override {
+        tge::BorderedRectangle::Render();
+        auto cntr = this->GetCenter();
+
+        std::wstring menuTitle = L" PAUSED ";
+        std::wstring resumeTxt = L" resume ";
+        std::wstring quitTxt = L"  quit  ";
+
+        render.DrawStringAtXY(cntr + tge::Vector2i{-int(menuTitle.length() / 2), -1}, menuTitle, tge::Color::White,
+                              tge::Color::BrightBlack);
+        render.DrawStringAtXY(cntr + tge::Vector2i{-int(resumeTxt.length() / 2), 1}, resumeTxt, tge::Color::White,
+                              selected == 0 ? tge::Color::BrightBlack : tge::Color::None);
+        render.DrawStringAtXY(cntr + tge::Vector2i{-int(quitTxt.length() / 2), 2}, quitTxt, tge::Color::White,
+                              selected == 1 ? tge::Color::BrightBlack : tge::Color::None);
+    }
+
+    void Update() override {
+        selected += Await(&downkey) - Await(&upkey);
+        selected = tge::Math::Clamp(0, 1, selected);
+
+        // enter keypress
+        if (tge::Keyboard::GetKeyDown(tge::Key::Enter)) {
+            switch (selected) {
+            case 0:
+                PushEvent(PauseToggledEvent{});
+                break;
+            case 1:
+                PushEvent(GameExitEvent{});
+                break;
+            }
+        }
+    }
+
+private:
+    int selected = 0;
+
+    tge::KeyBuffer upkey = tge::Key::Up;
+    tge::KeyBuffer downkey = tge::Key::Down;
+};
+
+class SnakeGame : public tge::GameManager {
+public:
+    SnakeGame() : tge::GameManager() {
+        this->SetFPS(165);
+        this->SetTicksPerSecond(60);
+    }
+
+    void Start() override {
+        Component<Snake>("snake")();
+        Component<PauseMenu>("pause_menu")();
+    }
+
+    void Update() override {
+        if (!tge::Terminal::IsFocused()) {
+            return;
+        }
+
+        if (!GetEvents<GameExitEvent>().empty()) {
+            this->Quit();
+        }
+
+        // Buffered key press
+        if (Await(&pausekey) || !GetEvents<PauseToggledEvent>().empty()) {
+            state.paused = !state.paused;
+        }
+
+        if (!state.paused) {
+            Get("snake")->Update();
+        } else
+            Get("pause_menu")->Update();
+    }
+
+    void Render() override {
+        Get("snake")->Render();
+        if (state.paused) {
+            Get("pause_menu")->Render();
+        }
+    }
+
+private:
+    tge::KeyBuffer pausekey = tge::Key::Escape;
+    GameState state;
+};
+
+int main() {
+    auto game = SnakeGame();
+    game.Run();
+}
