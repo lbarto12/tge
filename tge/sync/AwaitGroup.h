@@ -9,9 +9,18 @@ namespace tge::async {
 struct AwaitGroup : public Awaitable {
     AwaitGroup(std::initializer_list<Awaitable*> awaits) : awaits(awaits) {}
 
-    bool Await() override {
+    bool Ready() override {
         for (Awaitable* await : awaits)
-            if (!await->Await()) return false;
+            if (!await->Ready()) return false;
+        return true;
+    }
+
+    bool Await() override {
+        // Check first
+        if (!this->Ready()) return false;
+
+        // Then consume all
+        for (Awaitable* await : awaits) await->Await();
 
         return true;
     }

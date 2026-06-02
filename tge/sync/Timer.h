@@ -24,7 +24,7 @@ template <typename TimeUnit> struct Timer : public async::Awaitable {
 
     void Reset() { this->last = Clock::now(); }
 
-    bool Ready() { return std::chrono::duration_cast<TimeUnit>(Clock::now() - last) >= interval; }
+    bool Ready() override { return std::chrono::duration_cast<TimeUnit>(Clock::now() - last) >= interval; }
 
     bool Await() override {
         if (Ready()) {
