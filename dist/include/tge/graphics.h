@@ -12,6 +12,7 @@
 
 // Basic shapes
 #include "models/component/basic/BorderedRectangle.h"
+#include "models/component/basic/Input.h"
 #include "models/component/basic/Rectangle.h"
 
 // Baseline terminal stuff
