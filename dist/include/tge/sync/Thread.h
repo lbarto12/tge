@@ -12,7 +12,7 @@ namespace tge::async {
 template <typename Args, typename Return> struct Thread : public Awaitable {
     Thread(std::function<Return(Args)> f) : Awaitable(), f(f) {}
 
-    void Start(Args args) {
+    void Run(Args args) {
         this->consumed = false;
         this->future = std::async(std::launch::async, f, args);
     }

@@ -12,7 +12,7 @@ class Game : public tge::GameManager {
 public:
     Game() : tge::GameManager() {}
 
-    void Start() override { t.Start("Hello world"); }
+    void Start() override { t.Run("Hello world"); }
 
     void Update() override {
         if (tge::Keyboard::GetKeyDown(tge::Key::Q)) {
@@ -21,7 +21,7 @@ public:
 
         if (Await(&t)) {
             res = t.Result();
-            t.Start("new");
+            t.Run("new");
             cycle--;
         }
         cycle += 1;
@@ -33,7 +33,7 @@ public:
     }
 
 private:
-    tge::async::Thread<std::string, int> t = tge::async::Thread<std::string, int>(strLen);
+    Thread<std::string, int> t = {strLen};
     int res = 0;
     int cycle = 0;
 
