@@ -11,7 +11,7 @@ public:
 
     void Update() override {
         if (auto kev = tge::Keyboard::GetKeyPressed()) {
-            if (kev.key == tge::Key::Backspace)
+            if (kev.key == tge::Key::Backspace && !input.empty())
                 input.pop_back();
             else
                 input += kev.chr;

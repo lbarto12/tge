@@ -1,5 +1,7 @@
 #include "BorderedRectangle.h"
+#include <string>
 
+namespace tge {
 class Input : public tge::BorderedRectangle {
 public:
     void Init() override {
@@ -9,7 +11,7 @@ public:
 
     void Update() override {
         if (auto kev = tge::Keyboard::GetKeyPressed()) {
-            if (kev.key == tge::Key::Backspace)
+            if (kev.key == tge::Key::Backspace && !input.empty())
                 input.pop_back();
             else
                 input += kev.chr;
@@ -29,7 +31,11 @@ public:
         }
     }
 
-    std::wstring GetValue() { return input; }
+    std::wstring GetValue() const { return input; }
+    std::wstring SetValue(const std::wstring& s) {
+        this->input = s;
+        return this->input;
+    }
 
 private:
     std::wstring input = L"";
@@ -51,3 +57,5 @@ private:
         return result;
     }
 };
+
+} // namespace tge
