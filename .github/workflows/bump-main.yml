@@ -38,7 +38,13 @@ jobs:
           git push origin main
           git push origin "v$new_version"
 
-      - name: Create GitHub Release
+      - name: Build dist tarball
+        run: |
+          sudo apt-get update && sudo apt-get install -y rsync
+          make dist
+          tar -czf tge-dist.tar.gz -C dist .
+
+      - name: Create GitHub Release with dist asset
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -46,7 +52,19 @@ jobs:
           gh release create "v$new_version" \
             --title "v$new_version" \
             --generate-notes \
-            --target main
+            --target main \
+            tge-dist.tar.gz
+
+      - name: Notify skeleton repo
+        env:
+          GH_TOKEN: ${{ secrets.SKELETON_DISPATCH_TOKEN }}
+        run: |
+          new_version=$(cat VERSION)
+          curl -fsSL -X POST \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/lbarto12/tge-skeleton/dispatches" \
+            -d "{\"event_type\":\"tge-release\",\"client_payload\":{\"version\":\"$new_version\"}}"
 
       - name: Sync version to development
         run: |
