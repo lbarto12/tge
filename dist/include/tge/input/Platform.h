@@ -1,5 +1,6 @@
 #pragma once
 #include <optional>
+// IWYU pragma: private, include <tge/input.h>
 
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN

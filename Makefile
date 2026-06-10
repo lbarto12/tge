@@ -33,7 +33,7 @@ endif
 dist:
 	rm -rf dist
 	mkdir -p dist/include/tge
-	rsync -a --include='*/' --include='*.h' --exclude='*' tge/ dist/include/tge/
+	rsync -a --include='*/' --include='*.h' --include='*.hpp' --exclude='*' tge/ dist/include/tge/
 ifneq ($(TGE_SRCS),)
 	mkdir -p dist/lib
 	$(MAKE) libtge.so

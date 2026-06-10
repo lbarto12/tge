@@ -3,6 +3,7 @@
 
 namespace tge::async {
 struct Awaitable {
+    virtual bool Ready() = 0;
     virtual bool Await() = 0;
     virtual ~Awaitable() = default;
 };

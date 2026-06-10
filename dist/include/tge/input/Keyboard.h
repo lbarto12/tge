@@ -12,6 +12,7 @@ struct KeyEvent {
     char chr = '\0';
     bool Is(const char c) { return key == Key::Character && chr == c; }
     bool Is(Key k) { return key == k; }
+    operator bool() { return key != Key::None; }
 };
 
 struct Keyboard {
