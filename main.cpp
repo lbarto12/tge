@@ -26,7 +26,4 @@ public:
     void Render() override { Get("modal")->Render(); }
 };
 
-int main() {
-    auto game = Game();
-    game.Run();
-}
+int main() { Game().Run(); }
