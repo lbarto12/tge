@@ -1,0 +1,59 @@
+name: Bump main version
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  bump:
+    if: github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'development'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Bump major version
+        run: |
+          version=$(cat VERSION)
+          major=${version%.*}
+          new_major=$((major + 1))
+          new_version="${new_major}.0"
+          echo "$new_version" > VERSION
+          echo "Released $version -> $new_version"
+
+      - name: Commit, tag, and push main
+        run: |
+          new_version=$(cat VERSION)
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add VERSION
+          git commit -m "chore: release version $new_version [skip version]"
+          git tag -a "v$new_version" -m "Release v$new_version"
+          git push origin main
+          git push origin "v$new_version"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          new_version=$(cat VERSION)
+          gh release create "v$new_version" \
+            --title "v$new_version" \
+            --generate-notes \
+            --target main
+
+      - name: Sync version to development
+        run: |
+          new_version=$(cat VERSION)
+          git fetch origin development
+          git checkout development
+          echo "$new_version" > VERSION
+          git add VERSION
+          git commit -m "chore: sync version to $new_version after release [skip version]"
+          git push origin development
