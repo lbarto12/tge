@@ -14,7 +14,7 @@ Framerates run substantially faster than in these gifs!
 This is a complete set of multi-platform terminal rendering, input, event, and life-cycle management tools.
 
 ## How to use it.
-Still need to write docs, but it will be cool :)
+<a href="https://tge-docs.vercel.app/">Read the docs!</a>
 
 <details>
 <summary>Getting Started</summary>
@@ -101,5 +101,6 @@ performance of procedural events and micro-movement animations.
 </blockquote>
 
 </details>
+
 
 
