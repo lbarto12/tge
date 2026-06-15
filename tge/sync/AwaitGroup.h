@@ -25,6 +25,8 @@ struct AwaitGroup : public Awaitable {
         return true;
     }
 
+    void Add(Awaitable* a) { this->awaits.push_back(a); }
+
 private:
     std::vector<Awaitable*> awaits;
 };

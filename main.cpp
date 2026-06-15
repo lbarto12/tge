@@ -1,5 +1,3 @@
-
-
 #include "tge/game.h"
 #include "tge/graphics.h"
 #include "tge/input.h"
@@ -8,22 +6,17 @@ using namespace tge::async;
 
 class Game : public tge::GameManager {
 public:
-    void Start() override {
-        auto modal = Component<tge::Input>("modal")();
-        modal->SetCenter(tge::Terminal::Size() / 2);
-    }
+    Game() : tge::GameManager() {}
 
     void Update() override {
-        if (tge::Keyboard::GetKeyDown(tge::Key::Q)) Quit();
-
-        if (tge::Keyboard::GetKeyDown(tge::Key::Enter)) {
-            Get<tge::Input>("modal")->SetBorderForegroundColor(tge::Color::Red);
-        }
-
-        Get("modal")->Update();
+        if (Await(&quit)) Quit();
     }
 
-    void Render() override { Get("modal")->Render(); }
+private:
+    tge::KeyChord quit = {tge::Key::LeftCtrl, tge::Key::Q};
 };
 
-int main() { Game().Run(); }
+int main() {
+    auto game = Game();
+    game.Run();
+}
