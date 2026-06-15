@@ -3,7 +3,7 @@
 #include "models/GameManager.h"
 #include "sync/AwaitGroup.h"
 #include "sync/Awaitable.h"
-#include "sync/Thread.h"
+#include "sync/ThreadFunction.h"
 #include "sync/Timer.h"
 
 #include "event/Event.h"

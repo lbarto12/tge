@@ -9,8 +9,8 @@
 
 namespace tge::async {
 
-template <typename Args, typename Return> struct Thread : public Awaitable {
-    Thread(std::function<Return(Args)> f) : Awaitable(), f(f) {}
+template <typename Args, typename Return> struct ThreadFunction : public Awaitable {
+    ThreadFunction(std::function<Return(Args)> f) : Awaitable(), f(f) {}
 
     void Run(Args args) {
         this->consumed = false;
@@ -30,6 +30,9 @@ template <typename Args, typename Return> struct Thread : public Awaitable {
     }
 
     Return Result() { return this->future.get(); }
+
+    void operator()(Args args) { this->Run(args); }
+    Return operator*() { return this->Result(); }
 
 private:
     bool consumed = false;
