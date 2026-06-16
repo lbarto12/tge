@@ -1,12 +1,12 @@
 #pragma once
 // IWYU pragma: private, include <tge/game.h>
 
+#include "../models/util/Vector2.h"
 #include <algorithm>
 #include <cstdlib>
 #include <random>
 #include <vector>
 
-#include "../models/util/Vector2.h"
 namespace tge {
 struct Random {
     Random() = delete;

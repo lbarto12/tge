@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <utility>
+
 namespace tge {
 class Math {
 public:

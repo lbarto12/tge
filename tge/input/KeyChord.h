@@ -13,12 +13,8 @@ namespace tge {
 class KeyChord : public async::Awaitable {
 public:
     KeyChord(std::initializer_list<tge::Key> init) {
-        for (auto k : init) {
-            buffs.push_back(k);
-        }
-        for (auto& kh : buffs) {
-            g.Add(&kh);
-        }
+        for (auto k : init) buffs.push_back(k);
+        for (auto& kh : buffs) g.Add(&kh);
     }
 
     bool Ready() override {

@@ -1,12 +1,11 @@
 #pragma once
 // IWYU pragma: private, include <tge/input.h>
+
+#include "./Platform.h"
 #include <cctype>
 #include <optional>
 
-#include "./Platform.h"
-
 namespace tge {
-
 struct KeyEvent {
     Key key = Key::None;
     char chr = '\0';

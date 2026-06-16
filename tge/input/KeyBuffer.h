@@ -4,6 +4,7 @@
 #include "../sync/Awaitable.h"
 #include "Keyboard.h"
 #include "Platform.h"
+
 namespace tge {
 class KeyBuffer : public async::Awaitable {
 public:
