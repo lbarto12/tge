@@ -21,13 +21,23 @@ public:
         }
     }
 
-    bool Ready() override { return g.Ready(); }
+    bool Ready() override {
+        if (!g.Ready()) consumed = false;
+        return g.Ready() && !consumed;
+    }
 
-    bool Await() override { return g.Await(); }
+    bool Await() override {
+        if (g.Ready()) {
+            consumed = true;
+            return true;
+        }
+        return false;
+    }
 
 private:
     // Need to store to pass stack pointers to await group. mem managed by design.
     std::vector<tge::KeyHold> buffs;
     async::AwaitGroup g = {};
+    bool consumed = false;
 };
 } // namespace tge

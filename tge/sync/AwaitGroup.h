@@ -10,9 +10,11 @@ struct AwaitGroup : public Awaitable {
     AwaitGroup(std::initializer_list<Awaitable*> awaits) : awaits(awaits) {}
 
     bool Ready() override {
-        for (Awaitable* await : awaits)
-            if (!await->Ready()) return false;
-        return true;
+        bool allReady = true;
+        for (Awaitable* await : awaits) {
+            if (!await->Ready()) allReady = false;
+        }
+        return allReady;
     }
 
     bool Await() override {
