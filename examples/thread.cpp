@@ -12,16 +12,16 @@ class Game : public tge::GameManager {
 public:
     Game() : tge::GameManager() {}
 
-    void Start() override { t.Run("Hello world"); }
+    void Start() override { testThread("Hello world"); }
 
     void Update() override {
         if (tge::Keyboard::GetKeyDown(tge::Key::Q)) {
             Quit();
         }
 
-        if (Await(&t)) {
-            res = t.Result();
-            t.Run("new");
+        if (Await(&testThread)) {
+            res = *testThread;
+            testThread("new");
             cycle--;
         }
         cycle += 1;
@@ -33,7 +33,7 @@ public:
     }
 
 private:
-    Thread<std::string, int> t = {strLen};
+    ThreadFunction<std::string, int> testThread = {strLen};
     int res = 0;
     int cycle = 0;
 

@@ -1,29 +1,33 @@
-
-
 #include "tge/game.h"
 #include "tge/graphics.h"
 #include "tge/input.h"
+#include <chrono>
+#include <iostream>
+#include <string>
+#include <thread>
 
 using namespace tge::async;
 
 class Game : public tge::GameManager {
 public:
-    void Start() override {
-        auto modal = Component<tge::Input>("modal")();
-        modal->SetCenter(tge::Terminal::Size() / 2);
-    }
+    Game() : tge::GameManager() {}
 
     void Update() override {
-        if (tge::Keyboard::GetKeyDown(tge::Key::Q)) Quit();
-
-        if (tge::Keyboard::GetKeyDown(tge::Key::Enter)) {
-            Get<tge::Input>("modal")->SetBorderForegroundColor(tge::Color::Red);
+        if (Await(&quitKey)) Quit();
+        if (Await(&incr)) {
+            count += 1;
         }
-
-        Get("modal")->Update();
     }
 
-    void Render() override { Get("modal")->Render(); }
+    void Render() override { render.DrawStringAtXY({0, 0}, std::to_wstring(count)); }
+
+private:
+    tge::KeyBuffer quitKey = tge::Key::Q;
+    tge::KeyChord incr = {tge::Key::LeftCtrl, tge::Key::W};
+    int count = 0;
 };
 
-int main() { Game().Run(); }
+int main() {
+    auto game = Game();
+    game.Run();
+}

@@ -7,5 +7,10 @@ struct Awaitable {
     virtual bool Await() = 0;
     virtual ~Awaitable() = default;
 };
-inline bool Await(Awaitable* a) { return a->Await(); }
+inline bool Await(Awaitable* a) {
+    if (a->Ready()) {
+        return a->Await();
+    }
+    return false;
+}
 } // namespace tge::async
